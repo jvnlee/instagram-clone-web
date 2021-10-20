@@ -1,15 +1,10 @@
 import styled from "styled-components";
 import {
-  faFacebook,
-  faFacebookF,
   faFacebookSquare,
   faInstagram,
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-const Title = styled.h1`
-  color: ${(props) => props.theme.fontColor};
-`;
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   display: flex;
@@ -26,7 +21,7 @@ const Wrapper = styled.div`
 
 const WhiteBox = styled.div`
   background-color: white;
-  border: 1px solid rgb(219, 219, 219);
+  border: 1px solid ${(props) => props.theme.borderColor};
   width: 100%;
 `;
 
@@ -44,28 +39,32 @@ const TopBox = styled(WhiteBox)`
     justify-items: center;
     align-items: center;
     flex-direction: column;
-    input {
-      width: 100%;
-      border-radius: 3px;
-      padding: 7px;
-      background-color: #fafafa;
-      border: 0.5px solid rgb(219, 219, 219);
-      margin-top: 5px;
-      box-sizing: border-box;
-      &::placeholder {
-        font-size: 12px;
-      }
-      &:last-child {
-        border: none;
-        margin-top: 12px;
-        background-color: #0095f6;
-        color: white;
-        text-align: center;
-        padding: 8px 0px;
-        font-weight: 600;
-      }
-    }
   }
+`;
+
+const LoginInput = styled.input`
+  width: 100%;
+  border-radius: 3px;
+  padding: 7px;
+  background-color: #fafafa;
+  border: 0.5px solid ${(props) => props.theme.borderColor};
+  margin-top: 5px;
+  box-sizing: border-box;
+  &::placeholder {
+    font-size: 12px;
+  }
+`;
+
+const LoginButton = styled.input`
+  width: 100%;
+  border: none;
+  border-radius: 3px;
+  margin-top: 12px;
+  background-color: ${(props) => props.theme.accent};
+  color: white;
+  text-align: center;
+  padding: 8px 0px;
+  font-weight: 600;
 `;
 
 const Separator = styled.div`
@@ -78,11 +77,12 @@ const Separator = styled.div`
   div {
     width: 100%;
     height: 1px;
-    background-color: rgb(219, 219, 219);
+    background-color: ${(props) => props.theme.borderColor};
   }
   span {
     margin: 0px 10px;
     font-weight: 600;
+    font-size: 12px;
     color: #8e8e8e;
   }
 `;
@@ -91,8 +91,9 @@ const BottomBox = styled(WhiteBox)`
   padding: 20px 0px;
   text-align: center;
   a {
+    margin-left: 5px;
     font-weight: 600;
-    color: #0095f6;
+    color: ${(props) => props.theme.accent};
   }
 `;
 
@@ -113,9 +114,9 @@ const Login = () => {
             <FontAwesomeIcon icon={faInstagram} size="3x" />
           </div>
           <form>
-            <input type="text" placeholder="Username" />
-            <input type="password" placeholder="Password" />
-            <input type="submit" value="Log in" />
+            <LoginInput type="text" placeholder="Username" />
+            <LoginInput type="password" placeholder="Password" />
+            <LoginButton type="submit" value="Log in" />
           </form>
           <Separator>
             <div></div>
@@ -128,7 +129,8 @@ const Login = () => {
           </FacebookLogin>
         </TopBox>
         <BottomBox>
-          <span>Don't have an account?</span> <a href="#">Sign up</a>
+          <span>Don't have an account?</span>
+          <Link to="/sign-up">Sign up</Link>
         </BottomBox>
       </Wrapper>
     </Container>
