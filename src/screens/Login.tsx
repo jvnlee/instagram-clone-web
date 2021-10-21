@@ -9,6 +9,9 @@ import TopBox from "../components/auth/TopBox";
 import BottomBox from "../components/auth/BottomBox";
 import routes from "../routes";
 import Logo from "../components/auth/Logo";
+import PageTitle from "../components/PageTitle";
+import { useForm } from "react-hook-form";
+import FormError from "../components/auth/FormError";
 
 const FacebookLogin = styled.div`
   color: #385285;
@@ -18,15 +21,52 @@ const FacebookLogin = styled.div`
   }
 `;
 
-const Login = () => {
+function Login() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm({
+    mode: "onChange",
+  });
+  const onValidSubmit = (data: any) => {
+    console.log(data);
+  };
   return (
     <AuthLayout>
+      <PageTitle title="Login" />
       <TopBox>
         <Logo />
-        <form>
-          <Input type="text" placeholder="Username" />
-          <Input type="password" placeholder="Password" />
-          <Button type="submit" value="Log in" />
+        <form onSubmit={handleSubmit(onValidSubmit)}>
+          <Input
+            {...register("username", {
+              required: "Username is required",
+              minLength: {
+                value: 6,
+                message: "Username should be longer than 6 characters.",
+              },
+              validate: (currentValue) => currentValue.length >= 6,
+            })}
+            type="text"
+            placeholder="Username"
+            hasError={Boolean(errors?.username?.message)}
+          />
+          <FormError message={errors?.username?.message} />
+          <Input
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 9,
+                message: "Password should be longer than 9 characters.",
+              },
+              validate: (currentValue) => currentValue.length >= 9,
+            })}
+            type="password"
+            placeholder="Password"
+            hasError={Boolean(errors?.password?.message)}
+          />
+          <FormError message={errors?.password?.message} />
+          <Button type="submit" value="Log in" disabled={!isValid} />
         </form>
         <Separator />
         <FacebookLogin>
@@ -41,6 +81,6 @@ const Login = () => {
       />
     </AuthLayout>
   );
-};
+}
 
 export default Login;

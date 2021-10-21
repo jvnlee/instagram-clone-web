@@ -20,7 +20,7 @@ const SSeparator = styled.div`
   }
 `;
 
-const Separator = () => {
+function Separator() {
   return (
     <SSeparator>
       <div></div>
@@ -28,6 +28,6 @@ const Separator = () => {
       <div></div>
     </SSeparator>
   );
-};
+}
 
 export default Separator;

@@ -18,8 +18,8 @@ const STopBox = styled(BaseBox)`
   }
 `;
 
-const TopBox = ({ children }: PropsWithChildren<any>) => {
+function TopBox({ children }: PropsWithChildren<any>) {
   return <STopBox>{children}</STopBox>;
-};
+}
 
 export default TopBox;

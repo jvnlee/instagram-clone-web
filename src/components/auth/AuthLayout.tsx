@@ -14,12 +14,12 @@ const Wrapper = styled.div`
   width: 100%;
 `;
 
-const AuthLayout = ({ children }: PropsWithChildren<any>) => {
+function AuthLayout({ children }: PropsWithChildren<any>) {
   return (
     <Container>
       <Wrapper>{children}</Wrapper>
     </Container>
   );
-};
+}
 
 export default AuthLayout;

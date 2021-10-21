@@ -10,6 +10,7 @@ import TopBox from "../components/auth/TopBox";
 import { FatLink } from "../components/shared";
 import routes from "../routes";
 import Logo from "../components/auth/Logo";
+import PageTitle from "../components/PageTitle";
 
 const HeaderContainer = styled.div`
   display: flex;
@@ -44,9 +45,10 @@ const FacebookLoginButton = styled.button`
   }
 `;
 
-const SignUp = () => {
+function SignUp() {
   return (
     <AuthLayout>
+      <PageTitle title="Sign Up" />
       <TopBox>
         <HeaderContainer>
           <Logo />
@@ -70,6 +72,6 @@ const SignUp = () => {
       <BottomBox cta="Have an account?" link={routes.home} linkText="Log in" />
     </AuthLayout>
   );
-};
+}
 
 export default SignUp;

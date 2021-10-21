@@ -6,12 +6,12 @@ const LogoContainer = styled.div`
   margin-bottom: 20px;
 `;
 
-const Logo = () => {
+function Logo() {
   return (
     <LogoContainer>
       <FontAwesomeIcon icon={faInstagram} size="3x" />
     </LogoContainer>
   );
-};
+}
 
 export default Logo;
