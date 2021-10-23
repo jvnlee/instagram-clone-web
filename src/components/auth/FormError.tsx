@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-interface IProps {
+interface ErrorProps {
   message?: string;
 }
 
@@ -11,7 +11,7 @@ const SFormError = styled.span`
   margin-top: 5px;
 `;
 
-function FormError({ message }: IProps) {
+function FormError({ message }: ErrorProps) {
   return message === "" || !message ? null : <SFormError>{message}</SFormError>;
 }
 

@@ -11,6 +11,11 @@ import { FatLink } from "../components/shared";
 import routes from "../routes";
 import Logo from "../components/auth/Logo";
 import PageTitle from "../components/PageTitle";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useMutation } from "@apollo/client";
+import gql from "graphql-tag";
+import FormError from "../components/auth/FormError";
+import { useHistory } from "react-router";
 
 const HeaderContainer = styled.div`
   display: flex;
@@ -45,7 +50,71 @@ const FacebookLoginButton = styled.button`
   }
 `;
 
+interface CreateAccountProps {
+  email: string;
+  firstName: string;
+  lastName?: string;
+  username: string;
+  password: string;
+  createAccountError?: string;
+}
+
+const CREATE_ACCOUNT_MUTATION = gql`
+  mutation createAccount(
+    $email: String!
+    $firstName: String!
+    $lastName: String
+    $username: String!
+    $password: String!
+  ) {
+    createAccount(
+      email: $email
+      firstName: $firstName
+      lastName: $lastName
+      username: $username
+      password: $password
+    ) {
+      status
+      error
+    }
+  }
+`;
+
 function SignUp() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    setError,
+    clearErrors,
+  } = useForm<CreateAccountProps>({
+    mode: "onChange",
+  });
+  const history = useHistory();
+  const onCompleted = (data: any) => {
+    const {
+      createAccount: { status, error },
+    } = data;
+    if (!status) {
+      return setError("createAccountError", {
+        message: error,
+      });
+    }
+    history.push(routes.home);
+  };
+  const [createAccount, { loading }] = useMutation(CREATE_ACCOUNT_MUTATION, {
+    onCompleted,
+  });
+  const onValidSubmit: SubmitHandler<CreateAccountProps> = (data) => {
+    if (loading) return;
+    createAccount({
+      variables: { ...data },
+    });
+  };
+  const clearCreateAccountError = () => {
+    clearErrors("createAccountError");
+  };
+
   return (
     <AuthLayout>
       <PageTitle title="Sign Up" />
@@ -61,12 +130,58 @@ function SignUp() {
           <span>Log in with Facebook</span>
         </FacebookLoginButton>
         <Separator />
-        <form>
-          <Input type="text" placeholder="Email" />
-          <Input type="text" placeholder="Name" />
-          <Input type="text" placeholder="Username" />
-          <Input type="password" placeholder="Password" />
-          <Button type="submit" value="Sign up" />
+        <form onSubmit={handleSubmit(onValidSubmit)}>
+          <Input
+            {...register("email", { required: "Email is required." })}
+            type="text"
+            placeholder="Email"
+            onFocus={clearCreateAccountError}
+          />
+          <FormError message={errors?.email?.message} />
+          <Input
+            {...register("firstName", { required: "First name is required." })}
+            type="text"
+            placeholder="First Name"
+          />
+          <FormError message={errors?.firstName?.message} />
+          <Input
+            {...register("lastName")}
+            type="text"
+            placeholder="Last Name"
+          />
+          <Input
+            {...register("username", {
+              required: "Username is required.",
+              minLength: {
+                value: 3,
+                message: "Username should be longer than 3 characters.",
+              },
+              validate: (currentValue) => currentValue.length >= 3,
+            })}
+            type="text"
+            placeholder="Username"
+            onFocus={clearCreateAccountError}
+          />
+          <FormError message={errors?.username?.message} />
+          <Input
+            {...register("password", {
+              required: "Password is required.",
+              minLength: {
+                value: 3,
+                message: "Password should be longer than 3 characters.",
+              },
+              validate: (currentValue) => currentValue.length >= 3,
+            })}
+            type="password"
+            placeholder="Password"
+          />
+          <FormError message={errors?.password?.message} />
+          <Button
+            type="submit"
+            value="Sign Up"
+            disabled={!isValid || loading}
+          />
+          <FormError message={errors?.createAccountError?.message} />
         </form>
       </TopBox>
       <BottomBox cta="Have an account?" link={routes.home} linkText="Log in" />

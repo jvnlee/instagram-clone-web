@@ -1,10 +1,10 @@
 import { Helmet } from "react-helmet-async";
 
-interface IProps {
+interface Props {
   title: string;
 }
 
-function PageTitle({ title }: IProps) {
+function PageTitle({ title }: Props) {
   return (
     <Helmet>
       <title>{title} • Instagram</title>

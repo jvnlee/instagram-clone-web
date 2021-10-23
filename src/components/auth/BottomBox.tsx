@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { BaseBox } from "../shared";
 
-interface IProps {
+interface CTAProps {
   cta: string;
   link: string;
   linkText: string;
@@ -18,7 +18,7 @@ const SBottomBox = styled(BaseBox)`
   }
 `;
 
-function BottomBox({ cta, link, linkText }: IProps) {
+function BottomBox({ cta, link, linkText }: CTAProps) {
   return (
     <SBottomBox>
       <span>{cta}</span>

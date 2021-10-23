@@ -14,6 +14,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import FormError from "../components/auth/FormError";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
+import { logUserIn } from "../apollo";
 
 const FacebookLogin = styled.div`
   color: #385285;
@@ -44,7 +45,6 @@ function Login() {
     register,
     handleSubmit,
     formState: { errors, isValid },
-    getValues,
     setError,
     clearErrors,
   } = useForm<LoginProps>({
@@ -55,22 +55,19 @@ function Login() {
       login: { status, token, error },
     } = data;
     if (!status) {
-      setError("loginError", {
+      return setError("loginError", {
         message: error,
       });
     }
+    if (token) {
+      logUserIn(token);
+    }
   };
   const [login, { loading }] = useMutation(LOGIN_MUTATION, { onCompleted });
-  const onValidSubmit = () => {
-    if (loading) {
-      return;
-    }
-    const { username, password } = getValues();
+  const onValidSubmit: SubmitHandler<LoginProps> = (data) => {
+    if (loading) return;
     login({
-      variables: {
-        username,
-        password,
-      },
+      variables: { ...data },
     });
   };
   const clearLoginError = () => {
