@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 interface IProps {
-  message: string;
+  message?: string;
 }
 
 const SFormError = styled.span`

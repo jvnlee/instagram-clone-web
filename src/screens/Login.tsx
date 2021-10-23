@@ -10,8 +10,10 @@ import BottomBox from "../components/auth/BottomBox";
 import routes from "../routes";
 import Logo from "../components/auth/Logo";
 import PageTitle from "../components/PageTitle";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import FormError from "../components/auth/FormError";
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/client";
 
 const FacebookLogin = styled.div`
   color: #385285;
@@ -21,17 +23,60 @@ const FacebookLogin = styled.div`
   }
 `;
 
+interface LoginProps {
+  username: string;
+  password: string;
+  loginError?: string;
+}
+
+const LOGIN_MUTATION = gql`
+  mutation login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      status
+      token
+      error
+    }
+  }
+`;
+
 function Login() {
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm({
+    getValues,
+    setError,
+    clearErrors,
+  } = useForm<LoginProps>({
     mode: "onChange",
   });
-  const onValidSubmit = (data: any) => {
-    console.log(data);
+  const onCompleted = (data: any) => {
+    const {
+      login: { status, token, error },
+    } = data;
+    if (!status) {
+      setError("loginError", {
+        message: error,
+      });
+    }
   };
+  const [login, { loading }] = useMutation(LOGIN_MUTATION, { onCompleted });
+  const onValidSubmit = () => {
+    if (loading) {
+      return;
+    }
+    const { username, password } = getValues();
+    login({
+      variables: {
+        username,
+        password,
+      },
+    });
+  };
+  const clearLoginError = () => {
+    clearErrors("loginError");
+  };
+
   return (
     <AuthLayout>
       <PageTitle title="Login" />
@@ -42,31 +87,34 @@ function Login() {
             {...register("username", {
               required: "Username is required",
               minLength: {
-                value: 6,
-                message: "Username should be longer than 6 characters.",
+                value: 3,
+                message: "Username should be longer than 3 characters.",
               },
-              validate: (currentValue) => currentValue.length >= 6,
+              validate: (currentValue) => currentValue.length >= 3,
             })}
             type="text"
             placeholder="Username"
             hasError={Boolean(errors?.username?.message)}
+            onFocus={clearLoginError}
           />
           <FormError message={errors?.username?.message} />
           <Input
             {...register("password", {
               required: "Password is required",
               minLength: {
-                value: 9,
-                message: "Password should be longer than 9 characters.",
+                value: 3,
+                message: "Password should be longer than 3 characters.",
               },
-              validate: (currentValue) => currentValue.length >= 9,
+              validate: (currentValue) => currentValue.length >= 3,
             })}
             type="password"
             placeholder="Password"
             hasError={Boolean(errors?.password?.message)}
+            onFocus={clearLoginError}
           />
           <FormError message={errors?.password?.message} />
-          <Button type="submit" value="Log in" disabled={!isValid} />
+          <Button type="submit" value="Log in" disabled={!isValid || loading} />
+          <FormError message={errors?.loginError?.message} />
         </form>
         <Separator />
         <FacebookLogin>
