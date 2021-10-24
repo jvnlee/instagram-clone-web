@@ -1,13 +1,9 @@
-import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import styled from "styled-components";
 import AuthLayout from "../components/auth/AuthLayout";
 import BottomBox from "../components/auth/BottomBox";
 import Input from "../components/auth/Input";
 import Separator from "../components/auth/Separator";
 import Button from "../components/auth/Button";
 import TopBox from "../components/auth/TopBox";
-import { FatLink } from "../components/shared";
 import routes from "../routes";
 import Logo from "../components/auth/Logo";
 import PageTitle from "../components/PageTitle";
@@ -16,39 +12,10 @@ import { useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import FormError from "../components/auth/FormError";
 import { useHistory } from "react-router";
-
-const HeaderContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const SubTitle = styled(FatLink)`
-  font-size: 16px;
-  text-align: center;
-  line-height: 20px;
-`;
-
-const FacebookLoginButton = styled.button`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  width: 100%;
-  border: none;
-  border-radius: 3px;
-  margin-top: 20px;
-  background-color: ${(props) => props.theme.accent};
-  color: white;
-  text-align: center;
-  padding: 6px 0px;
-  font-weight: 600;
-  font-size: 18px;
-  align-items: center;
-  span {
-    margin: 1.5px 0px 0px 10px;
-    font-size: 14px;
-  }
-`;
+import { MutationResponse } from "../types";
+import SubTitle from "../components/auth/SubTitle";
+import HeaderContainer from "../components/auth/HeaderContainer";
+import FacebookLogin from "../components/auth/FacebookLogin";
 
 interface CreateAccountProps {
   email: string;
@@ -85,22 +52,28 @@ function SignUp() {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    getValues,
     setError,
     clearErrors,
   } = useForm<CreateAccountProps>({
     mode: "onChange",
   });
   const history = useHistory();
-  const onCompleted = (data: any) => {
+  const onCompleted = (data: MutationResponse) => {
     const {
       createAccount: { status, error },
     } = data;
+    const { username, password } = getValues();
     if (!status) {
       return setError("createAccountError", {
         message: error,
       });
     }
-    history.push(routes.home);
+    history.push(routes.home, {
+      message: "Successfully signed up! Please log in with your account",
+      username,
+      password,
+    });
   };
   const [createAccount, { loading }] = useMutation(CREATE_ACCOUNT_MUTATION, {
     onCompleted,
@@ -121,14 +94,9 @@ function SignUp() {
       <TopBox>
         <HeaderContainer>
           <Logo />
-          <SubTitle>
-            Sign up to see photos and videos from your friends.
-          </SubTitle>
+          <SubTitle text="Sign up to see photos and videos from your friends." />
         </HeaderContainer>
-        <FacebookLoginButton>
-          <FontAwesomeIcon icon={faFacebookSquare} />
-          <span>Log in with Facebook</span>
-        </FacebookLoginButton>
+        <FacebookLogin isButton={true} />
         <Separator />
         <form onSubmit={handleSubmit(onValidSubmit)}>
           <Input

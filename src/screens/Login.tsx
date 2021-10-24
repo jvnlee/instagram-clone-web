@@ -1,6 +1,3 @@
-import styled from "styled-components";
-import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthLayout from "../components/auth/AuthLayout";
 import Separator from "../components/auth/Separator";
 import Input from "../components/auth/Input";
@@ -15,19 +12,21 @@ import FormError from "../components/auth/FormError";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import { logUserIn } from "../apollo";
-
-const FacebookLogin = styled.div`
-  color: #385285;
-  span {
-    margin-left: 10px;
-    font-weight: 600;
-  }
-`;
+import { useLocation } from "react-router";
+import { MutationResponse } from "../types";
+import FacebookLogin from "../components/auth/FacebookLogin";
+import Notification from "../components/auth/Notification";
 
 interface LoginProps {
   username: string;
   password: string;
   loginError?: string;
+}
+
+interface LocationStateProps {
+  message?: string;
+  username: string;
+  password: string;
 }
 
 const LOGIN_MUTATION = gql`
@@ -41,6 +40,7 @@ const LOGIN_MUTATION = gql`
 `;
 
 function Login() {
+  const location = useLocation<LocationStateProps>();
   const {
     register,
     handleSubmit,
@@ -49,8 +49,12 @@ function Login() {
     clearErrors,
   } = useForm<LoginProps>({
     mode: "onChange",
+    defaultValues: {
+      username: location?.state?.username || "",
+      password: location?.state?.password || "",
+    },
   });
-  const onCompleted = (data: any) => {
+  const onCompleted = (data: MutationResponse) => {
     const {
       login: { status, token, error },
     } = data;
@@ -79,6 +83,7 @@ function Login() {
       <PageTitle title="Login" />
       <TopBox>
         <Logo />
+        <Notification message={location?.state?.message} />
         <form onSubmit={handleSubmit(onValidSubmit)}>
           <Input
             {...register("username", {
@@ -114,10 +119,7 @@ function Login() {
           <FormError message={errors?.loginError?.message} />
         </form>
         <Separator />
-        <FacebookLogin>
-          <FontAwesomeIcon icon={faFacebookSquare} />
-          <span>Log in with Facebook</span>
-        </FacebookLogin>
+        <FacebookLogin isButton={false} />
       </TopBox>
       <BottomBox
         cta="Don't have an account?"

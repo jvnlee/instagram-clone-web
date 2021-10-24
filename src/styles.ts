@@ -2,13 +2,17 @@ import { createGlobalStyle, DefaultTheme } from "styled-components";
 import reset from "styled-reset";
 
 export const lightMode: DefaultTheme = {
-  accent: "#0095f6",
+  bgColor: "#fafafa",
+  fontColor: "rgb(38, 38, 38)",
   borderColor: "rgb(219, 219, 219)",
+  accent: "#0095f6",
 };
 
 export const darkMode: DefaultTheme = {
-  accent: "#0095f6",
+  bgColor: "#000000",
+  fontColor: "white",
   borderColor: "rgb(219, 219, 219)",
+  accent: "#0095f6",
 };
 
 export const GlobalStyles = createGlobalStyle`
@@ -20,10 +24,10 @@ export const GlobalStyles = createGlobalStyle`
       box-sizing: border-box;
     }
     body {
-        background-color: #fafafa;
+        background-color: ${(props) => props.theme.bgColor};
+        color: ${(props) => props.theme.fontColor};
         font-size: 14px;
         font-family: 'Open Sans', sans-serif;
-        color: rgb(38, 38, 38);
     }
     a {
       text-decoration: none;
