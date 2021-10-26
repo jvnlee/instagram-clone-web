@@ -12,7 +12,7 @@ export const logUserIn = (token: string) => {
   isLoggedInVar(true);
 };
 
-export const logUserOut = (history?: any) => {
+export const logUserOut = (history: any) => {
   localStorage.removeItem(TOKEN);
   history?.replace(routes.home, null);
   isLoggedInVar(false);

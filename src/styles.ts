@@ -4,14 +4,14 @@ import reset from "styled-reset";
 export const lightMode: DefaultTheme = {
   bgColor: "#fafafa",
   fontColor: "rgb(38, 38, 38)",
-  borderColor: "rgb(219, 219, 219)",
+  borderColor: "#dbdbdb",
   accent: "#0095f6",
 };
 
 export const darkMode: DefaultTheme = {
-  bgColor: "#000000",
+  bgColor: "#1c1c1c",
   fontColor: "white",
-  borderColor: "rgb(219, 219, 219)",
+  borderColor: "#dbdbdb",
   accent: "#0095f6",
 };
 

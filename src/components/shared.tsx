@@ -1,8 +1,11 @@
 import styled from "styled-components";
+import { lightMode } from "../styles";
 
 export const BaseBox = styled.div`
-  background-color: ${(props) => props.theme.bgColor};
-  border: 1px solid ${(props) => props.theme.borderColor};
+  background-color: ${(props) =>
+    props.theme === lightMode ? "#ffffff" : "#181818"};
+  border: 1px solid
+    ${(props) => (props.theme === lightMode ? "#dbdbdb" : "#101010")};
   width: 100%;
 `;
 

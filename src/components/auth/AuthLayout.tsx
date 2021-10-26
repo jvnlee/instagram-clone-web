@@ -1,5 +1,5 @@
 import { useReactiveVar } from "@apollo/client";
-import { faMoon, faSun } from "@fortawesome/free-regular-svg-icons";
+import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PropsWithChildren } from "react-router/node_modules/@types/react";
 import styled from "styled-components";
@@ -24,6 +24,10 @@ const Footer = styled.footer`
 
 const DarkModeBtn = styled.span`
   cursor: pointer;
+  span {
+    margin-left: 10px;
+    font-weight: 600;
+  }
 `;
 
 function AuthLayout({ children }: PropsWithChildren<any>) {
@@ -34,6 +38,9 @@ function AuthLayout({ children }: PropsWithChildren<any>) {
       <Footer>
         <DarkModeBtn onClick={darkMode ? disableDarkMode : enableDarkMode}>
           <FontAwesomeIcon icon={darkMode ? faSun : faMoon} />
+          <span>
+            {darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          </span>
         </DarkModeBtn>
       </Footer>
     </Container>
