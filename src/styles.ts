@@ -27,7 +27,7 @@ export const GlobalStyles = createGlobalStyle`
         background-color: ${(props) => props.theme.bgColor};
         color: ${(props) => props.theme.fontColor};
         font-size: 14px;
-        font-family: 'Open Sans', sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
     }
     a {
       text-decoration: none;

@@ -5,6 +5,7 @@ interface StyledProps {
 }
 
 const Input = styled.input<StyledProps>`
+  color: #000000;
   width: 100%;
   border-radius: 3px;
   padding: 7px;
