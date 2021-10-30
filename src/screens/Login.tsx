@@ -13,11 +13,11 @@ import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import { logUserIn } from "../apollo";
 import { useLocation } from "react-router";
-import { MutationResponse } from "../types";
 import FacebookLogin from "../components/auth/FacebookLogin";
 import Notification from "../components/auth/Notification";
+import { login, loginVariables } from "../__generated__/login";
 
-interface LoginProps {
+interface LoginFormProps {
   username: string;
   password: string;
   loginError?: string;
@@ -47,28 +47,33 @@ function Login() {
     formState: { errors, isValid },
     setError,
     clearErrors,
-  } = useForm<LoginProps>({
+  } = useForm<LoginFormProps>({
     mode: "onChange",
     defaultValues: {
       username: location?.state?.username || "",
       password: location?.state?.password || "",
     },
   });
-  const onCompleted = (data: MutationResponse) => {
-    const {
-      login: { status, token, error },
-    } = data;
-    if (!status) {
-      return setError("loginError", {
-        message: error,
-      });
+
+  const [login, { loading }] = useMutation<login, loginVariables>(
+    LOGIN_MUTATION,
+    {
+      onCompleted: (data) => {
+        const {
+          login: { status, token, error },
+        } = data;
+        if (!status) {
+          return setError("loginError", {
+            message: error,
+          });
+        }
+        if (token) {
+          logUserIn(token);
+        }
+      },
     }
-    if (token) {
-      logUserIn(token);
-    }
-  };
-  const [login, { loading }] = useMutation(LOGIN_MUTATION, { onCompleted });
-  const onValidSubmit: SubmitHandler<LoginProps> = (data) => {
+  );
+  const onValidSubmit: SubmitHandler<LoginFormProps> = (data) => {
     if (loading) return;
     login({
       variables: { ...data },

@@ -11,7 +11,7 @@ const Input = styled.input<StyledProps>`
   padding: 7px;
   background-color: #fafafa;
   border: 0.5px solid
-    ${(props) => (props.hasError ? "red" : props.theme.borderColor)};
+    ${(props) => (props.hasError ? "#ff0000" : props.theme.borderColor)};
   margin-top: 5px;
   box-sizing: border-box;
   &::placeholder {

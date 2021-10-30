@@ -56,7 +56,7 @@ function Header() {
         <Column>
           <FontAwesomeIcon icon={faInstagram} size="2x" />
         </Column>
-        <div>
+        <Column>
           {isLoggedIn ? (
             <IconsContainer>
               <Icon>
@@ -80,7 +80,7 @@ function Header() {
               <LoginButton>Log in</LoginButton>
             </Link>
           )}
-        </div>
+        </Column>
       </Wrapper>
     </SHeader>
   );
