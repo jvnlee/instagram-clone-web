@@ -17,7 +17,7 @@ import FacebookLogin from "../components/auth/FacebookLogin";
 import Notification from "../components/auth/Notification";
 import { login, loginVariables } from "../__generated__/login";
 
-interface LoginFormProps {
+interface FormProps {
   username: string;
   password: string;
   loginError?: string;
@@ -25,8 +25,8 @@ interface LoginFormProps {
 
 interface LocationStateProps {
   message?: string;
-  username: string;
-  password: string;
+  username?: string;
+  password?: string;
 }
 
 const LOGIN_MUTATION = gql`
@@ -41,13 +41,14 @@ const LOGIN_MUTATION = gql`
 
 function Login() {
   const location = useLocation<LocationStateProps>();
+  console.log(location);
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
     setError,
     clearErrors,
-  } = useForm<LoginFormProps>({
+  } = useForm<FormProps>({
     mode: "onChange",
     defaultValues: {
       username: location?.state?.username || "",
@@ -62,7 +63,7 @@ function Login() {
         const {
           login: { status, token, error },
         } = data;
-        if (!status) {
+        if (!status && error) {
           return setError("loginError", {
             message: error,
           });
@@ -73,7 +74,7 @@ function Login() {
       },
     }
   );
-  const onValidSubmit: SubmitHandler<LoginFormProps> = (data) => {
+  const onValidSubmit: SubmitHandler<loginVariables> = (data) => {
     if (loading) return;
     login({
       variables: { ...data },

@@ -12,12 +12,15 @@ import { useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import FormError from "../components/auth/FormError";
 import { useHistory } from "react-router";
-import { MutationResponse } from "../types";
 import SubTitle from "../components/auth/SubTitle";
-import HeaderContainer from "../components/auth/HeaderContainer";
+import SignUpHeader from "../components/auth/SignUpHeader";
 import FacebookLogin from "../components/auth/FacebookLogin";
+import {
+  createAccount,
+  createAccountVariables,
+} from "../__generated__/createAccount";
 
-interface CreateAccountProps {
+interface FormProps {
   email: string;
   firstName: string;
   lastName?: string;
@@ -55,30 +58,32 @@ function SignUp() {
     getValues,
     setError,
     clearErrors,
-  } = useForm<CreateAccountProps>({
+  } = useForm<FormProps>({
     mode: "onChange",
   });
   const history = useHistory();
-  const onCompleted = (data: MutationResponse) => {
-    const {
-      createAccount: { status, error },
-    } = data;
-    const { username, password } = getValues();
-    if (!status) {
-      return setError("createAccountError", {
-        message: error,
+  const [createAccount, { loading }] = useMutation<
+    createAccount,
+    createAccountVariables
+  >(CREATE_ACCOUNT_MUTATION, {
+    onCompleted: (data) => {
+      const {
+        createAccount: { status, error },
+      } = data;
+      const { username, password } = getValues();
+      if (!status && error) {
+        return setError("createAccountError", {
+          message: error,
+        });
+      }
+      history.push(routes.home, {
+        message: "Successfully signed up! Please log in with your account",
+        username,
+        password,
       });
-    }
-    history.push(routes.home, {
-      message: "Successfully signed up! Please log in with your account",
-      username,
-      password,
-    });
-  };
-  const [createAccount, { loading }] = useMutation(CREATE_ACCOUNT_MUTATION, {
-    onCompleted,
+    },
   });
-  const onValidSubmit: SubmitHandler<CreateAccountProps> = (data) => {
+  const onValidSubmit: SubmitHandler<createAccountVariables> = (data) => {
     if (loading) return;
     createAccount({
       variables: { ...data },
@@ -92,10 +97,10 @@ function SignUp() {
     <AuthLayout>
       <PageTitle title="Sign Up" />
       <TopBox>
-        <HeaderContainer>
+        <SignUpHeader>
           <Logo />
           <SubTitle text="Sign up to see photos and videos from your friends." />
-        </HeaderContainer>
+        </SignUpHeader>
         <FacebookLogin isButton={true} />
         <Separator />
         <form onSubmit={handleSubmit(onValidSubmit)}>

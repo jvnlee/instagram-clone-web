@@ -8,14 +8,13 @@ import { isLoggedInVar } from "../apollo";
 import useUser from "../hooks/useUser";
 import routes from "../routes";
 import Avatar from "./Avatar";
+import { BaseBox } from "./shared";
 
-const SHeader = styled.header`
+const SHeader = styled(BaseBox)`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
   border-bottom: 1px solid ${(props) => props.theme.borderColor};
-  background-color: ${(props) => props.theme.bgColor};
   padding: 14px 0px;
 `;
 
@@ -33,6 +32,9 @@ const IconsContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  svg {
+    font-size: 22px;
+  }
 `;
 
 const Icon = styled.span`
@@ -60,18 +62,18 @@ function Header() {
           {isLoggedIn ? (
             <IconsContainer>
               <Icon>
-                <FontAwesomeIcon icon={faHome} size="lg" />
+                <FontAwesomeIcon icon={faHome} />
               </Icon>
               <Icon>
-                <FontAwesomeIcon icon={faCompass} size="lg" />
+                <FontAwesomeIcon icon={faCompass} />
               </Icon>
               {data?.me?.avatar ? (
                 <Icon>
-                  <Avatar url={data?.me?.avatar} />
+                  <Avatar size="22" url={data?.me?.avatar} />
                 </Icon>
               ) : (
                 <Icon>
-                  <FontAwesomeIcon icon={faUser} size="lg" />
+                  <FontAwesomeIcon icon={faUser} />
                 </Icon>
               )}
             </IconsContainer>
