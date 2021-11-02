@@ -16,7 +16,7 @@ import {
   toggleLike,
   toggleLikeVariables,
 } from "../../__generated__/toggleLike";
-import { connect } from "tls";
+import { LikeFragment } from "../../__generated__/LikeFragment";
 
 const TOGGLE_LIKE_MUTATION = gql`
   mutation toggleLike($id: Int!) {
@@ -71,29 +71,65 @@ const Action = styled.div`
 
 const Likes = styled(FatText)``;
 
-function Post({ id, user, file, isLiked, likes }: seeFeed_seeFeed) {
-  const updateLike = (cache: any, result: any) => {
-    if (result.data?.toggleLike.status) {
-      cache.writeFragment({
-        id: `Photo:${id}`,
-        fragment: gql`
-          fragment toggleLike on Photo {
-            isLiked
-          }
-        `,
-        data: {
-          isLiked: !isLiked,
-        },
-      });
+const Comments = styled.div`
+  margin-top: 10px;
+`;
+
+const Comment = styled.div``;
+
+const Caption = styled.span`
+  margin-left: 5px;
+`;
+
+const CommentCount = styled.span`
+  display: block;
+  margin-top: 10px;
+  opacity: 0.7;
+  font-weight: 600;
+`;
+
+function Post({
+  id,
+  user,
+  file,
+  isLiked,
+  likes,
+  caption,
+  commentNum,
+  comments,
+}: seeFeed_seeFeed) {
+  const [toggleLikeMutation] = useMutation<toggleLike, toggleLikeVariables>(
+    TOGGLE_LIKE_MUTATION,
+    {
+      variables: { id },
+      update: (cache, result) => {
+        if (result.data?.toggleLike.status) {
+          const fragmentId = `Photo:${id}`;
+          const fragment = gql`
+            fragment LikeFragment on Photo {
+              isLiked
+              likes
+            }
+          `;
+          const cacheData = cache.readFragment<LikeFragment>({
+            id: fragmentId,
+            fragment,
+          });
+
+          cache.writeFragment({
+            id: fragmentId,
+            fragment,
+            data: {
+              isLiked: !cacheData?.isLiked,
+              likes: cacheData?.isLiked
+                ? cacheData?.likes - 1
+                : cacheData?.likes! + 1,
+            },
+          });
+        }
+      },
     }
-  };
-  const [toggleLikeMutation, { loading }] = useMutation<
-    toggleLike,
-    toggleLikeVariables
-  >(TOGGLE_LIKE_MUTATION, {
-    variables: { id },
-    update: updateLike,
-  });
+  );
 
   return (
     <Container key={id}>
@@ -123,6 +159,15 @@ function Post({ id, user, file, isLiked, likes }: seeFeed_seeFeed) {
           </div>
         </ActionsContainer>
         <Likes>{likes === 1 ? "1 Like" : `${likes} Likes`}</Likes>
+        <Comments>
+          <Comment>
+            <FatText>{user.username}</FatText>
+            <Caption>{caption}</Caption>
+          </Comment>
+          <CommentCount>
+            {commentNum === 1 ? "1 comment" : `${commentNum} comments`}
+          </CommentCount>
+        </Comments>
       </PhotoBottom>
     </Container>
   );
