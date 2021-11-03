@@ -17,6 +17,7 @@ import {
   toggleLikeVariables,
 } from "../../__generated__/toggleLike";
 import { LikeFragment } from "../../__generated__/LikeFragment";
+import Comments from "./Comments";
 
 const TOGGLE_LIKE_MUTATION = gql`
   mutation toggleLike($id: Int!) {
@@ -70,23 +71,6 @@ const Action = styled.div`
 `;
 
 const Likes = styled(FatText)``;
-
-const Comments = styled.div`
-  margin-top: 10px;
-`;
-
-const Comment = styled.div``;
-
-const Caption = styled.span`
-  margin-left: 5px;
-`;
-
-const CommentCount = styled.span`
-  display: block;
-  margin-top: 10px;
-  opacity: 0.7;
-  font-weight: 600;
-`;
 
 function Post({
   id,
@@ -159,15 +143,12 @@ function Post({
           </div>
         </ActionsContainer>
         <Likes>{likes === 1 ? "1 Like" : `${likes} Likes`}</Likes>
-        <Comments>
-          <Comment>
-            <FatText>{user.username}</FatText>
-            <Caption>{caption}</Caption>
-          </Comment>
-          <CommentCount>
-            {commentNum === 1 ? "1 comment" : `${commentNum} comments`}
-          </CommentCount>
-        </Comments>
+        <Comments
+          author={user.username}
+          caption={caption}
+          commentNum={commentNum}
+          comments={comments}
+        />
       </PhotoBottom>
     </Container>
   );
