@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
-import Post from "../components/feed/Photo";
+import Post from "../components/feed/Post";
 import PageTitle from "../components/PageTitle";
 import { seeFeed } from "../__generated__/seeFeed";
 
@@ -33,14 +33,18 @@ const FEED_QUERY = gql`
 `;
 
 function Home() {
-  const { data } = useQuery<seeFeed>(FEED_QUERY);
+  const { data, loading } = useQuery<seeFeed>(FEED_QUERY);
   return (
-    <div>
+    <>
       <PageTitle title="Home" />
-      {data?.seeFeed?.map(
-        (photo) => photo && <Post key={photo.id} {...photo} />
+      {loading ? (
+        <h1>Loading...</h1>
+      ) : (
+        data?.seeFeed?.map(
+          (photo) => photo && <Post key={photo.id} photo={photo} />
+        )
       )}
-    </div>
+    </>
   );
 }
 

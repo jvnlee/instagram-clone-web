@@ -41,7 +41,7 @@ const Icon = styled.span`
   margin-left: 25px;
 `;
 
-const LoginButton = styled.span`
+const LoginBtn = styled.span`
   background-color: ${(props) => props.theme.accent};
   border-radius: 4px;
   padding: 5px 9px;
@@ -79,7 +79,7 @@ function Header() {
             </IconsContainer>
           ) : (
             <Link to={routes.home}>
-              <LoginButton>Log in</LoginButton>
+              <LoginBtn>Log in</LoginBtn>
             </Link>
           )}
         </Column>

@@ -19,7 +19,8 @@ export const darkMode: DefaultTheme = {
 
 export const GlobalStyles = createGlobalStyle`
     ${reset}
-    input {
+    input, button
+    {
       all: unset;
     }
     * {

@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { lightMode } from "../styles";
 
 export const BaseBox = styled.div`
   background-color: ${(props) => props.theme.boxColor};

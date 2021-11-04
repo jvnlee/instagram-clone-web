@@ -7,6 +7,7 @@ import { me } from "../__generated__/me";
 const ME_QUERY = gql`
   query me {
     me {
+      id
       username
       avatar
     }

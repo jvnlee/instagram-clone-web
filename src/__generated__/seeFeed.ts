@@ -20,7 +20,7 @@ export interface seeFeed_seeFeed_comments_user {
 
 export interface seeFeed_seeFeed_comments {
   __typename: "Comment";
-  id: string;
+  id: number;
   user: seeFeed_seeFeed_comments_user;
   payload: string;
   isMine: boolean;

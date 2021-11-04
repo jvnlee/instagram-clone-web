@@ -16,8 +16,11 @@ import {
   toggleLike,
   toggleLikeVariables,
 } from "../../__generated__/toggleLike";
-import { LikeFragment } from "../../__generated__/LikeFragment";
 import Comments from "./Comments";
+
+interface PostProps {
+  photo: seeFeed_seeFeed;
+}
 
 const TOGGLE_LIKE_MUTATION = gql`
   mutation toggleLike($id: Int!) {
@@ -70,44 +73,23 @@ const Action = styled.div`
   cursor: pointer;
 `;
 
-const Likes = styled(FatText)``;
+const Likes = styled(FatText)`
+  display: block;
+  margin-bottom: 12px;
+`;
 
-function Post({
-  id,
-  user,
-  file,
-  isLiked,
-  likes,
-  caption,
-  commentNum,
-  comments,
-}: seeFeed_seeFeed) {
+function Post({ photo }: PostProps) {
   const [toggleLikeMutation] = useMutation<toggleLike, toggleLikeVariables>(
     TOGGLE_LIKE_MUTATION,
     {
-      variables: { id },
+      variables: { id: photo.id },
       update: (cache, result) => {
         if (result.data?.toggleLike.status) {
-          const fragmentId = `Photo:${id}`;
-          const fragment = gql`
-            fragment LikeFragment on Photo {
-              isLiked
-              likes
-            }
-          `;
-          const cacheData = cache.readFragment<LikeFragment>({
-            id: fragmentId,
-            fragment,
-          });
-
-          cache.writeFragment({
-            id: fragmentId,
-            fragment,
-            data: {
-              isLiked: !cacheData?.isLiked,
-              likes: cacheData?.isLiked
-                ? cacheData?.likes - 1
-                : cacheData?.likes! + 1,
+          cache.modify({
+            id: `Photo:${photo.id}`,
+            fields: {
+              isLiked: (prev) => !prev,
+              likes: (prev) => (photo.isLiked ? prev - 1 : prev + 1),
             },
           });
         }
@@ -116,19 +98,19 @@ function Post({
   );
 
   return (
-    <Container key={id}>
+    <Container key={photo.id}>
       <PhotoTop>
-        <Avatar size="32" url={user.avatar} />
-        <Username>{user.username}</Username>
+        <Avatar size="32" url={photo.user.avatar} />
+        <Username>{photo.user.username}</Username>
       </PhotoTop>
-      <Photo src={file} />
+      <Photo src={photo.file} />
       <PhotoBottom>
         <ActionsContainer>
           <div>
             <Action onClick={() => toggleLikeMutation()}>
               <FontAwesomeIcon
-                style={{ color: isLiked ? "#ed4956" : "inherit" }}
-                icon={isLiked ? solidFaHeart : faHeart}
+                style={{ color: photo.isLiked ? "#ed4956" : "inherit" }}
+                icon={photo.isLiked ? solidFaHeart : faHeart}
               />
             </Action>
             <Action>
@@ -142,13 +124,8 @@ function Post({
             <FontAwesomeIcon icon={faBookmark} />
           </div>
         </ActionsContainer>
-        <Likes>{likes === 1 ? "1 Like" : `${likes} Likes`}</Likes>
-        <Comments
-          author={user.username}
-          caption={caption}
-          commentNum={commentNum}
-          comments={comments}
-        />
+        <Likes>{photo.likes === 1 ? "1 Like" : `${photo.likes} Likes`}</Likes>
+        <Comments photo={photo} />
       </PhotoBottom>
     </Container>
   );

@@ -4,16 +4,20 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: me
+// GraphQL fragment: newComment
 // ====================================================
 
-export interface me_me {
+export interface newComment_user {
   __typename: "User";
-  id: number;
   username: string;
   avatar: string | null;
 }
 
-export interface me {
-  me: me_me | null;
+export interface newComment {
+  __typename: "Comment";
+  id: number;
+  createdAt: string;
+  isMine: boolean;
+  payload: string;
+  user: newComment_user;
 }
