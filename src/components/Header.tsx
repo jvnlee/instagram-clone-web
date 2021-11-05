@@ -69,7 +69,9 @@ function Header() {
               </Icon>
               {data?.me?.avatar ? (
                 <Icon>
-                  <Avatar size="22" url={data?.me?.avatar} />
+                  <Link to={`/${data?.me?.username}`}>
+                    <Avatar size="22" url={data?.me?.avatar} />
+                  </Link>
                 </Icon>
               ) : (
                 <Icon>

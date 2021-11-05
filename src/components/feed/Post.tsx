@@ -17,6 +17,7 @@ import {
   toggleLikeVariables,
 } from "../../__generated__/toggleLike";
 import Comments from "./Comments";
+import { Link } from "react-router-dom";
 
 interface PostProps {
   photo: seeFeed_seeFeed;
@@ -100,8 +101,12 @@ function Post({ photo }: PostProps) {
   return (
     <Container key={photo.id}>
       <PhotoTop>
-        <Avatar size="32" url={photo.user.avatar} />
-        <Username>{photo.user.username}</Username>
+        <Link to={`/${photo.user.username}`}>
+          <Avatar size="32" url={photo.user.avatar} />
+        </Link>
+        <Link to={`/${photo.user.username}`}>
+          <Username>{photo.user.username}</Username>
+        </Link>
       </PhotoTop>
       <Photo src={photo.file} />
       <PhotoBottom>
