@@ -16,6 +16,7 @@ export interface seeFeed_seeFeed_user {
 export interface seeFeed_seeFeed_comments_user {
   __typename: "User";
   username: string;
+  avatar: string | null;
 }
 
 export interface seeFeed_seeFeed_comments {
@@ -29,16 +30,16 @@ export interface seeFeed_seeFeed_comments {
 
 export interface seeFeed_seeFeed {
   __typename: "Photo";
-  id: number;
   user: seeFeed_seeFeed_user;
+  id: number;
   file: string;
-  caption: string | null;
   likes: number;
-  comments: (seeFeed_seeFeed_comments | null)[] | null;
   commentNum: number;
+  isLiked: boolean;
+  caption: string | null;
+  comments: (seeFeed_seeFeed_comments | null)[] | null;
   createdAt: string;
   isMine: boolean;
-  isLiked: boolean;
 }
 
 export interface seeFeed {
