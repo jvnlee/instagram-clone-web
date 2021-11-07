@@ -1,14 +1,26 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import gql from "graphql-tag";
 import { useParams } from "react-router";
 import styled from "styled-components";
+import SubmitButton from "../components/auth/SubmitButton";
 import Avatar from "../components/Avatar";
-import { FatText } from "../components/shared";
+import PageTitle from "../components/PageTitle";
+import { Button, FatText } from "../components/shared";
 import { PHOTO_FRAGMENT } from "../fragments";
-import { seeProfile, seeProfileVariables } from "../__generated__/seeProfile";
+import {
+  seeProfile,
+  seeProfileVariables,
+  seeProfile_seeProfile,
+} from "../__generated__/seeProfile";
 
 interface ParamsType {
   username: string;
+}
+
+interface PhotoProps {
+  url?: string;
 }
 
 const SEE_PROFILE_QUERY = gql`
@@ -31,6 +43,22 @@ const SEE_PROFILE_QUERY = gql`
   ${PHOTO_FRAGMENT}
 `;
 
+const FOLLOW_USER_MUTATION = gql`
+  mutation followUser($username: String!) {
+    followUser(username: $username) {
+      status
+    }
+  }
+`;
+
+const UNFOLLOW_USER_MUTATION = gql`
+  mutation unfollowUser($username: String!) {
+    unfollowUser(username: $username) {
+      status
+    }
+  }
+`;
+
 const Header = styled.div`
   display: flex;
 `;
@@ -43,6 +71,7 @@ const RowContainer = styled.div`
 
 const Row = styled.div`
   font-size: 16px;
+  display: flex;
 `;
 
 const Username = styled.span`
@@ -66,9 +95,60 @@ const Name = styled(FatText)`
   margin-bottom: 10px;
 `;
 
+const PhotoGrid = styled.div`
+  display: grid;
+  grid-auto-rows: 290px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 50px;
+`;
+
+const Photo = styled.div<PhotoProps>`
+  background-image: url(${(props) => props.url});
+  background-size: cover;
+  position: relative;
+`;
+
+const PhotoIconContainer = styled.div`
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  opacity: 0;
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+const PhotoIcon = styled.span`
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  margin: 0px 10px;
+  svg {
+    margin-right: 5px;
+  }
+`;
+
+const ProfileBtn = styled(Button)`
+  margin-left: 20px;
+  padding: 8px 24px;
+  cursor: pointer;
+`;
+
+// const ProfileBtn = styled(SubmitButton).attrs({
+//   as: "span",
+// })`
+//   margin-left: 20px;
+// `;
+
 function Profile() {
   const { username } = useParams<ParamsType>();
-  const { data } = useQuery<seeProfile, seeProfileVariables>(
+  const { data, loading } = useQuery<seeProfile, seeProfileVariables>(
     SEE_PROFILE_QUERY,
     {
       variables: {
@@ -76,13 +156,44 @@ function Profile() {
       },
     }
   );
+  const [followUser] = useMutation(FOLLOW_USER_MUTATION, {
+    variables: {
+      username,
+    },
+    refetchQueries: [{ query: SEE_PROFILE_QUERY, variables: { username } }],
+  });
+  const [unfollowUser] = useMutation(UNFOLLOW_USER_MUTATION, {
+    variables: {
+      username,
+    },
+    refetchQueries: [{ query: SEE_PROFILE_QUERY, variables: { username } }],
+  });
+
+  const createBtn = (seeProfile: seeProfile_seeProfile) => {
+    const { isMe, isFollowing } = seeProfile;
+    if (isMe) {
+      return <ProfileBtn>Edit Profile</ProfileBtn>;
+    }
+    if (isFollowing) {
+      return <ProfileBtn onClick={() => unfollowUser()}>Unfollow</ProfileBtn>;
+    } else {
+      return <ProfileBtn onClick={() => followUser()}>Follow</ProfileBtn>;
+    }
+  };
+
+  const pageTitle = `${data?.seeProfile?.firstName!} ${
+    data?.seeProfile?.lastName
+  } (@${data?.seeProfile?.username})`;
+
   return (
     <>
+      <PageTitle title={loading ? "Loading" : pageTitle} />
       <Header>
         <Avatar size="150" url={data?.seeProfile?.avatar} />
         <RowContainer>
           <Row>
             <Username>{data?.seeProfile?.username}</Username>
+            {data?.seeProfile ? createBtn(data.seeProfile) : null}
           </Row>
           <Row>
             <ItemContainer>
@@ -111,6 +222,22 @@ function Profile() {
           <Row>{data?.seeProfile?.bio}</Row>
         </RowContainer>
       </Header>
+      <PhotoGrid>
+        {data?.seeProfile?.photos?.map((photo) => (
+          <Photo key={photo?.id} url={photo?.file}>
+            <PhotoIconContainer>
+              <PhotoIcon>
+                <FontAwesomeIcon icon={faHeart} />
+                {photo?.likes}
+              </PhotoIcon>
+              <PhotoIcon>
+                <FontAwesomeIcon icon={faComment} />
+                {photo?.commentNum}
+              </PhotoIcon>
+            </PhotoIconContainer>
+          </Photo>
+        ))}
+      </PhotoGrid>
     </>
   );
 }

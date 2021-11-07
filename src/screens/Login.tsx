@@ -1,7 +1,6 @@
 import AuthLayout from "../components/auth/AuthLayout";
 import Separator from "../components/auth/Separator";
 import Input from "../components/auth/Input";
-import Button from "../components/auth/Button";
 import TopBox from "../components/auth/TopBox";
 import BottomBox from "../components/auth/BottomBox";
 import routes from "../routes";
@@ -16,6 +15,7 @@ import { useLocation } from "react-router";
 import FacebookLogin from "../components/auth/FacebookLogin";
 import Notification from "../components/auth/Notification";
 import { login, loginVariables } from "../__generated__/login";
+import SubmitButton from "../components/auth/SubmitButton";
 
 interface FormProps {
   username: string;
@@ -41,7 +41,6 @@ const LOGIN_MUTATION = gql`
 
 function Login() {
   const location = useLocation<LocationStateProps>();
-  console.log(location);
   const {
     register,
     handleSubmit,
@@ -121,7 +120,11 @@ function Login() {
             onFocus={clearLoginError}
           />
           <FormError message={errors?.password?.message} />
-          <Button type="submit" value="Log in" disabled={!isValid || loading} />
+          <SubmitButton
+            type="submit"
+            value="Log in"
+            disabled={!isValid || loading}
+          />
           <FormError message={errors?.loginError?.message} />
         </form>
         <Separator />

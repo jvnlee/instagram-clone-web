@@ -2,7 +2,7 @@ import AuthLayout from "../components/auth/AuthLayout";
 import BottomBox from "../components/auth/BottomBox";
 import Input from "../components/auth/Input";
 import Separator from "../components/auth/Separator";
-import Button from "../components/auth/Button";
+import SubmitButton from "../components/auth/SubmitButton";
 import TopBox from "../components/auth/TopBox";
 import routes from "../routes";
 import Logo from "../components/auth/Logo";
@@ -149,7 +149,7 @@ function SignUp() {
             placeholder="Password"
           />
           <FormError message={errors?.password?.message} />
-          <Button
+          <SubmitButton
             type="submit"
             value="Sign Up"
             disabled={!isValid || loading}

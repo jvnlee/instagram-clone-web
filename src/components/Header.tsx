@@ -8,7 +8,7 @@ import { isLoggedInVar } from "../apollo";
 import useUser from "../hooks/useUser";
 import routes from "../routes";
 import Avatar from "./Avatar";
-import { BaseBox } from "./shared";
+import { BaseBox, Button } from "./shared";
 
 const SHeader = styled(BaseBox)`
   display: flex;
@@ -41,13 +41,7 @@ const Icon = styled.span`
   margin-left: 25px;
 `;
 
-const LoginBtn = styled.span`
-  background-color: ${(props) => props.theme.accent};
-  border-radius: 4px;
-  padding: 5px 9px;
-  color: white;
-  font-weight: 600;
-`;
+const LoginBtn = styled(Button)``;
 
 function Header() {
   const isLoggedIn = useReactiveVar(isLoggedInVar);

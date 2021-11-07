@@ -14,3 +14,11 @@ export const FatLink = styled.span`
 export const FatText = styled.span`
   font-weight: 600;
 `;
+
+export const Button = styled.span`
+  background-color: ${(props) => props.theme.accent};
+  border-radius: 4px;
+  padding: 5px 9px;
+  color: white;
+  font-weight: 600;
+`;
