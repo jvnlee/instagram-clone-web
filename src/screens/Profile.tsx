@@ -9,6 +9,7 @@ import Avatar from "../components/Avatar";
 import PageTitle from "../components/PageTitle";
 import { Button, FatText } from "../components/shared";
 import { PHOTO_FRAGMENT } from "../fragments";
+import useUser from "../hooks/useUser";
 import {
   seeProfile,
   seeProfileVariables,
@@ -148,6 +149,7 @@ const ProfileBtn = styled(Button)`
 
 function Profile() {
   const { username } = useParams<ParamsType>();
+  const { data: userData } = useUser();
   const { data, loading } = useQuery<seeProfile, seeProfileVariables>(
     SEE_PROFILE_QUERY,
     {
@@ -160,13 +162,53 @@ function Profile() {
     variables: {
       username,
     },
-    refetchQueries: [{ query: SEE_PROFILE_QUERY, variables: { username } }],
+    update: (cache, result) => {
+      const {
+        data: {
+          followUser: { status },
+        },
+      } = result;
+      if (!status) return;
+      cache.modify({
+        id: `User:${username}`,
+        fields: {
+          isFollowing: (prev) => !prev,
+          totalFollowers: (prev) => prev + 1,
+        },
+      });
+      cache.modify({
+        id: `User:${userData?.me?.username}`,
+        fields: {
+          totalFollowing: (prev) => prev + 1,
+        },
+      });
+    },
   });
   const [unfollowUser] = useMutation(UNFOLLOW_USER_MUTATION, {
     variables: {
       username,
     },
-    refetchQueries: [{ query: SEE_PROFILE_QUERY, variables: { username } }],
+    update: (cache, result) => {
+      const {
+        data: {
+          unfollowUser: { status },
+        },
+      } = result;
+      if (!status) return;
+      cache.modify({
+        id: `User:${username}`,
+        fields: {
+          isFollowing: (prev) => !prev,
+          totalFollowers: (prev) => prev - 1,
+        },
+      });
+      cache.modify({
+        id: `User:${userData?.me?.username}`,
+        fields: {
+          totalFollowing: (prev) => prev - 1,
+        },
+      });
+    },
   });
 
   const createBtn = (seeProfile: seeProfile_seeProfile) => {
