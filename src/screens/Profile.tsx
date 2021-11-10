@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import gql from "graphql-tag";
 import { useParams } from "react-router";
 import styled from "styled-components";
-import SubmitButton from "../components/auth/SubmitButton";
 import Avatar from "../components/Avatar";
 import PageTitle from "../components/PageTitle";
 import { Button, FatText } from "../components/shared";
