@@ -73,7 +73,9 @@ function Header() {
                 </Icon>
               ) : (
                 <Icon>
-                  <FontAwesomeIcon icon={faUser} />
+                  <Link to={`/${data?.me?.username}`}>
+                    <FontAwesomeIcon icon={faUser} />
+                  </Link>
                 </Icon>
               )}
             </IconsContainer>

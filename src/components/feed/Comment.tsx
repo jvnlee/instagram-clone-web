@@ -7,14 +7,18 @@ import {
   deleteComment,
   deleteCommentVariables,
 } from "../../__generated__/deleteComment";
+import Avatar from "../Avatar";
 import { FatText } from "../shared";
 
 interface CommentProps {
   id?: number;
   photoId?: number;
-  author: string;
-  payload: string;
+  avatarOn?: boolean;
+  avatar?: string;
+  author?: string;
+  payload?: string;
   isMine?: boolean;
+  margin?: string;
 }
 
 const DELETE_COMMENT_MUTATION = gql`
@@ -26,11 +30,20 @@ const DELETE_COMMENT_MUTATION = gql`
   }
 `;
 
-const CommentContainer = styled.div`
-  margin-top: 10px;
+const CommentContainer = styled.div<CommentProps>`
+  margin: ${(props) => props.margin};
   display: flex;
   justify-content: space-between;
   align-items: center;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const AvatarContainer = styled.div`
+  margin-right: 12px;
 `;
 
 const Caption = styled.span`
@@ -49,9 +62,19 @@ const DeleteBtn = styled.button`
   padding: 2px 8px;
   border-radius: 10px;
   vertical-align: middle;
+  cursor: pointer;
 `;
 
-function Comment({ id, photoId, author, payload, isMine }: CommentProps) {
+function Comment({
+  id,
+  photoId,
+  avatarOn,
+  avatar,
+  author,
+  payload,
+  isMine,
+  margin,
+}: CommentProps) {
   const [deleteComment] = useMutation<deleteComment, deleteCommentVariables>(
     DELETE_COMMENT_MUTATION,
     {
@@ -74,31 +97,37 @@ function Comment({ id, photoId, author, payload, isMine }: CommentProps) {
     deleteComment();
   };
   return (
-    <CommentContainer>
-      <div>
+    <CommentContainer margin={margin}>
+      <Wrapper>
+        {avatarOn ? (
+          <AvatarContainer>
+            <Avatar size="32" url={avatar} />
+          </AvatarContainer>
+        ) : null}
         <Link to={`/${author}`}>
           <FatText>{author}</FatText>
         </Link>
         <Caption>
-          {payload.split(" ").map((word: string, index: number) =>
-            /#[\w]+|@[\w]+/.test(word) ? (
-              word.includes("#") ? (
-                <React.Fragment key={index}>
-                  <Link to={`/hashtags/${word.substring(1)}`}>{word}</Link>
-                  &nbsp;
-                </React.Fragment>
+          {payload &&
+            payload.split(" ").map((word: string, index: number) =>
+              /#[\w]+|@[\w]+/.test(word) ? (
+                word.includes("#") ? (
+                  <React.Fragment key={index}>
+                    <Link to={`/hashtags/${word.substring(1)}`}>{word}</Link>
+                    &nbsp;
+                  </React.Fragment>
+                ) : (
+                  <React.Fragment key={index}>
+                    <Link to={`/${word.substring(1)}`}>{word}</Link>
+                    &nbsp;
+                  </React.Fragment>
+                )
               ) : (
-                <React.Fragment key={index}>
-                  <Link to={`/${word.substring(1)}`}>{word}</Link>
-                  &nbsp;
-                </React.Fragment>
+                <React.Fragment key={index}>{word}&nbsp;</React.Fragment>
               )
-            ) : (
-              <React.Fragment key={index}>{word}&nbsp;</React.Fragment>
-            )
-          )}
+            )}
         </Caption>
-      </div>
+      </Wrapper>
       {isMine ? <DeleteBtn onClick={onDeleteClick}>Delete</DeleteBtn> : null}
     </CommentContainer>
   );

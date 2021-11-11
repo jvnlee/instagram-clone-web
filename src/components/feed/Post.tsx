@@ -119,7 +119,9 @@ function Post({ photo }: PostProps) {
               />
             </Action>
             <Action>
-              <FontAwesomeIcon icon={faComment} />
+              <Link to={`/posts/${photo.id}`}>
+                <FontAwesomeIcon icon={faComment} />
+              </Link>
             </Action>
             <Action>
               <FontAwesomeIcon icon={faPaperPlane} />

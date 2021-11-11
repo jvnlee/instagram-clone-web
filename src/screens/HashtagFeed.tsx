@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import { seeHashtag, seeHashtagVariables } from "../__generated__/seeHashtag";
+import Avatar from "../components/Avatar";
+import { FatText } from "../components/shared";
 
 interface ParamsType {
   hashtag: string;
@@ -27,6 +29,37 @@ const SEE_HASHTAG_QUERY = gql`
   }
   ${PHOTO_FRAGMENT}
 `;
+
+const Header = styled.div`
+  display: flex;
+`;
+
+const RowContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-left: 80px;
+`;
+
+const Row = styled.div`
+  font-size: 16px;
+  display: flex;
+`;
+
+const Username = styled.span`
+  font-size: 28px;
+  font-weight: 300;
+`;
+
+const ItemContainer = styled.ul`
+  display: flex;
+  margin: 30px 0px;
+`;
+
+const Item = styled.li`
+  margin-right: 40px;
+`;
+
+const Value = styled(FatText)``;
 
 const PhotoGrid = styled.div`
   display: grid;
@@ -73,15 +106,37 @@ function HashtagFeed() {
     SEE_HASHTAG_QUERY,
     {
       variables: {
-        hashtag,
+        hashtag: `#${hashtag}`,
       },
     }
   );
-
   return (
     <>
       <PageTitle title={`#${hashtag} hashtag`} />
-      <h1>Hello</h1>
+      <Header>
+        <Avatar
+          size="150"
+          url={
+            data?.seeHashtag?.photos && data.seeHashtag.photos.length > 0
+              ? data.seeHashtag.photos[0]?.file
+              : null
+          }
+        />
+        <RowContainer>
+          <Row>
+            <Username>{data?.seeHashtag?.hashtag}</Username>
+          </Row>
+          <Row>
+            <ItemContainer>
+              <Item>
+                <span>
+                  <Value>{data?.seeHashtag?.photos?.length}</Value> posts
+                </span>
+              </Item>
+            </ItemContainer>
+          </Row>
+        </RowContainer>
+      </Header>
       <PhotoGrid>
         {data?.seeHashtag?.photos?.map((photo) => (
           <Photo key={photo?.id} url={photo?.file}>

@@ -3,6 +3,7 @@ import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import gql from "graphql-tag";
 import { useParams } from "react-router";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Avatar from "../components/Avatar";
 import PageTitle from "../components/PageTitle";
@@ -266,16 +267,18 @@ function Profile() {
       <PhotoGrid>
         {data?.seeProfile?.photos?.map((photo) => (
           <Photo key={photo?.id} url={photo?.file}>
-            <PhotoIconContainer>
-              <PhotoIcon>
-                <FontAwesomeIcon icon={faHeart} />
-                {photo?.likes}
-              </PhotoIcon>
-              <PhotoIcon>
-                <FontAwesomeIcon icon={faComment} />
-                {photo?.commentNum}
-              </PhotoIcon>
-            </PhotoIconContainer>
+            <Link to={`/posts/${photo?.id}`}>
+              <PhotoIconContainer>
+                <PhotoIcon>
+                  <FontAwesomeIcon icon={faHeart} />
+                  {photo?.likes}
+                </PhotoIcon>
+                <PhotoIcon>
+                  <FontAwesomeIcon icon={faComment} />
+                  {photo?.commentNum}
+                </PhotoIcon>
+              </PhotoIconContainer>
+            </Link>
           </Photo>
         ))}
       </PhotoGrid>

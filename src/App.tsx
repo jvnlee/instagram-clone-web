@@ -9,6 +9,7 @@ import HashtagFeed from "./screens/HashtagFeed";
 import Home from "./screens/Home";
 import Login from "./screens/Login";
 import NotFound from "./screens/NotFound";
+import PostDetail from "./screens/PostDetail";
 import Profile from "./screens/Profile";
 import SignUp from "./screens/SignUp";
 import { darkMode, GlobalStyles, lightMode } from "./styles";
@@ -35,6 +36,11 @@ function App() {
               <Route path={`/hashtags/:hashtag`}>
                 <Layout>
                   <HashtagFeed />
+                </Layout>
+              </Route>
+              <Route path={`/posts/:id`}>
+                <Layout>
+                  <PostDetail />
                 </Layout>
               </Route>
               {isLoggedIn ? null : (

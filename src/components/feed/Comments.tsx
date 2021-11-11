@@ -1,6 +1,7 @@
 import { useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import useUser from "../../hooks/useUser";
 import {
@@ -30,7 +31,7 @@ const Container = styled.div`
 
 const CommentCount = styled.span`
   display: block;
-  margin-top: 12px;
+  margin-top: 14px;
   opacity: 0.5;
   font-weight: 600;
 `;
@@ -103,11 +104,15 @@ function Comments({ photo }: CommentsProps) {
 
   return (
     <Container>
-      <Comment author={photo.user.username!} payload={photo.caption!} />
-      <CommentCount>
-        {photo.commentNum >= 2 ? `View all ${photo.commentNum} comments` : null}
-      </CommentCount>
-      {photo.comments?.slice(-2).map((comment) => (
+      <Comment author={photo?.user.username!} payload={photo?.caption!} />
+      <Link to={`/posts/${photo?.id}`}>
+        <CommentCount>
+          {photo?.commentNum >= 2
+            ? `View all ${photo?.commentNum} comments`
+            : null}
+        </CommentCount>
+      </Link>
+      {photo?.comments?.slice(-2).map((comment) => (
         <Comment
           key={comment?.id}
           id={comment?.id!}
@@ -115,6 +120,7 @@ function Comments({ photo }: CommentsProps) {
           author={comment?.user.username!}
           payload={comment?.payload!}
           isMine={comment?.isMine}
+          margin="12px 0 0"
         />
       ))}
       <InputContainer>

@@ -5,7 +5,7 @@ import PageTitle from "../components/PageTitle";
 import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from "../fragments";
 import { seeFeed } from "../__generated__/seeFeed";
 
-const FEED_QUERY = gql`
+const SEE_FEED_QUERY = gql`
   query seeFeed {
     seeFeed {
       user {
@@ -26,7 +26,8 @@ const FEED_QUERY = gql`
 `;
 
 function Home() {
-  const { data, loading } = useQuery<seeFeed>(FEED_QUERY);
+  const { data, loading } = useQuery<seeFeed>(SEE_FEED_QUERY);
+  console.log(data, loading);
   return (
     <>
       <PageTitle title="Home" />
