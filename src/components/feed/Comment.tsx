@@ -48,6 +48,7 @@ const AvatarContainer = styled.div`
 
 const Caption = styled.span`
   margin-left: 5px;
+  word-break: break-all;
   a {
     background-color: inherit;
     color: ${(props) => props.theme.accent};

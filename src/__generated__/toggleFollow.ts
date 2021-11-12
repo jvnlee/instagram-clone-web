@@ -4,18 +4,19 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: unfollowUser
+// GraphQL mutation operation: toggleFollow
 // ====================================================
 
-export interface unfollowUser_unfollowUser {
-  __typename: "MutationResponse";
+export interface toggleFollow_toggleFollow {
+  __typename: "ToggleFollowResult";
   status: boolean;
+  isFollowing: boolean | null;
 }
 
-export interface unfollowUser {
-  unfollowUser: unfollowUser_unfollowUser;
+export interface toggleFollow {
+  toggleFollow: toggleFollow_toggleFollow;
 }
 
-export interface unfollowUserVariables {
+export interface toggleFollowVariables {
   username: string;
 }

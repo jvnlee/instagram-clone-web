@@ -15,6 +15,10 @@ import {
   seeProfileVariables,
   seeProfile_seeProfile,
 } from "../__generated__/seeProfile";
+import {
+  toggleFollow,
+  toggleFollowVariables,
+} from "../__generated__/toggleFollow";
 
 interface ParamsType {
   username: string;
@@ -44,24 +48,19 @@ const SEE_PROFILE_QUERY = gql`
   ${PHOTO_FRAGMENT}
 `;
 
-const FOLLOW_USER_MUTATION = gql`
-  mutation followUser($username: String!) {
-    followUser(username: $username) {
+const TOGGLE_FOLLOW_MUTATION = gql`
+  mutation toggleFollow($username: String!) {
+    toggleFollow(username: $username) {
       status
-    }
-  }
-`;
-
-const UNFOLLOW_USER_MUTATION = gql`
-  mutation unfollowUser($username: String!) {
-    unfollowUser(username: $username) {
-      status
+      isFollowing
     }
   }
 `;
 
 const Header = styled.div`
   display: flex;
+  padding-bottom: 35px;
+  border-bottom: 0.5px solid ${(props) => props.theme.borderColor};
 `;
 
 const RowContainer = styled.div`
@@ -101,7 +100,7 @@ const PhotoGrid = styled.div`
   grid-auto-rows: 290px;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
-  margin-top: 50px;
+  margin-top: 40px;
 `;
 
 const Photo = styled.div<PhotoProps>`
@@ -150,6 +149,34 @@ const ProfileBtn = styled(Button)`
 function Profile() {
   const { username } = useParams<ParamsType>();
   const { data: userData } = useUser();
+
+  const [toggleFollow] = useMutation<toggleFollow, toggleFollowVariables>(
+    TOGGLE_FOLLOW_MUTATION,
+    {
+      variables: {
+        username,
+      },
+      update: (cache, result) => {
+        const { status, isFollowing } = result.data?.toggleFollow!;
+        if (!status) return;
+        cache.modify({
+          id: `User:${username}`,
+          fields: {
+            isFollowing: (prev) => !prev,
+            totalfollowers: (prev) => (isFollowing ? prev + 1 : prev - 1),
+          },
+        });
+        cache.modify({
+          id: `User:${userData?.me?.username}`,
+          fields: {
+            totalFollowing: (prev) => (isFollowing ? prev + 1 : prev - 1),
+          },
+        });
+        console.log(status, isFollowing);
+      },
+    }
+  );
+
   const { data, loading } = useQuery<seeProfile, seeProfileVariables>(
     SEE_PROFILE_QUERY,
     {
@@ -158,58 +185,6 @@ function Profile() {
       },
     }
   );
-  const [followUser] = useMutation(FOLLOW_USER_MUTATION, {
-    variables: {
-      username,
-    },
-    update: (cache, result) => {
-      const {
-        data: {
-          followUser: { status },
-        },
-      } = result;
-      if (!status) return;
-      cache.modify({
-        id: `User:${username}`,
-        fields: {
-          isFollowing: (prev) => !prev,
-          totalFollowers: (prev) => prev + 1,
-        },
-      });
-      cache.modify({
-        id: `User:${userData?.me?.username}`,
-        fields: {
-          totalFollowing: (prev) => prev + 1,
-        },
-      });
-    },
-  });
-  const [unfollowUser] = useMutation(UNFOLLOW_USER_MUTATION, {
-    variables: {
-      username,
-    },
-    update: (cache, result) => {
-      const {
-        data: {
-          unfollowUser: { status },
-        },
-      } = result;
-      if (!status) return;
-      cache.modify({
-        id: `User:${username}`,
-        fields: {
-          isFollowing: (prev) => !prev,
-          totalFollowers: (prev) => prev - 1,
-        },
-      });
-      cache.modify({
-        id: `User:${userData?.me?.username}`,
-        fields: {
-          totalFollowing: (prev) => prev - 1,
-        },
-      });
-    },
-  });
 
   const createBtn = (seeProfile: seeProfile_seeProfile) => {
     const { isMe, isFollowing } = seeProfile;
@@ -217,9 +192,9 @@ function Profile() {
       return <ProfileBtn>Edit Profile</ProfileBtn>;
     }
     if (isFollowing) {
-      return <ProfileBtn onClick={() => unfollowUser()}>Unfollow</ProfileBtn>;
+      return <ProfileBtn onClick={() => toggleFollow()}>Unfollow</ProfileBtn>;
     } else {
-      return <ProfileBtn onClick={() => followUser()}>Follow</ProfileBtn>;
+      return <ProfileBtn onClick={() => toggleFollow()}>Follow</ProfileBtn>;
     }
   };
 

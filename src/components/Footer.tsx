@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { disableDarkMode, enableDarkMode, isDarkModeVar } from "../apollo";
 
 const SFooter = styled.div`
-  margin: 180px auto 0;
+  margin: 180px auto 20px;
   max-width: 930px;
   width: 100%;
   display: flex;

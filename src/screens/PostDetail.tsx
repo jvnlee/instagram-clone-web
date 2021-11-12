@@ -9,7 +9,7 @@ import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from "../fragments";
 import { seePhoto, seePhotoVariables } from "../__generated__/seePhoto";
 import Comment from "../components/feed/Comment";
 import { Link } from "react-router-dom";
-import Comments from "../components/feed/Comments";
+import TimeBefore from "../components/TimeBefore";
 
 interface ParamsType {
   id: string;
@@ -81,8 +81,6 @@ const Middle = styled.div`
   padding: 16px;
 `;
 
-const CommentsContainer = styled.div``;
-
 function PostDetail() {
   const { id } = useParams<ParamsType>();
   const photoId = parseInt(id);
@@ -120,8 +118,8 @@ function PostDetail() {
               avatar={data?.seePhoto?.user.avatar!}
               author={data?.seePhoto?.user.username!}
               payload={data?.seePhoto?.caption!}
-              margin=""
             />
+            {TimeBefore(data?.seePhoto?.createdAt!)}
             {data?.seePhoto?.comments?.map((comment) => (
               <Comment
                 key={comment?.id}
