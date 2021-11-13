@@ -55,24 +55,21 @@ function Login() {
     },
   });
 
-  const [login, { loading }] = useMutation<login, loginVariables>(
-    LOGIN_MUTATION,
-    {
-      onCompleted: (data) => {
-        const {
-          login: { status, token, error },
-        } = data;
-        if (!status && error) {
-          return setError("loginError", {
-            message: error,
-          });
-        }
-        if (token) {
-          logUserIn(token);
-        }
-      },
-    }
-  );
+  const [login, { loading }] = useMutation<login>(LOGIN_MUTATION, {
+    onCompleted: (data) => {
+      const {
+        login: { status, token, error },
+      } = data;
+      if (!status && error) {
+        return setError("loginError", {
+          message: error,
+        });
+      }
+      if (token) {
+        logUserIn(token);
+      }
+    },
+  });
   const onValidSubmit: SubmitHandler<loginVariables> = (data) => {
     if (loading) return;
     login({

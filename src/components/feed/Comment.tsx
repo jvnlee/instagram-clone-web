@@ -25,7 +25,6 @@ const DELETE_COMMENT_MUTATION = gql`
   mutation deleteComment($id: Int!) {
     deleteComment(id: $id) {
       status
-      error
     }
   }
 `;
@@ -81,7 +80,7 @@ function Comment({
     {
       variables: { id: id! },
       update: (cache, result) => {
-        const { status, error } = result.data?.deleteComment!;
+        const { status } = result.data?.deleteComment!;
         if (status) {
           cache.evict({ id: `Comment:${id}` });
           cache.modify({

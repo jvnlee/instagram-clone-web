@@ -62,27 +62,27 @@ function SignUp() {
     mode: "onChange",
   });
   const history = useHistory();
-  const [createAccount, { loading }] = useMutation<
-    createAccount,
-    createAccountVariables
-  >(CREATE_ACCOUNT_MUTATION, {
-    onCompleted: (data) => {
-      const {
-        createAccount: { status, error },
-      } = data;
-      const { username, password } = getValues();
-      if (!status && error) {
-        return setError("createAccountError", {
-          message: error,
+  const [createAccount, { loading }] = useMutation<createAccount>(
+    CREATE_ACCOUNT_MUTATION,
+    {
+      onCompleted: (data) => {
+        const {
+          createAccount: { status, error },
+        } = data;
+        const { username, password } = getValues();
+        if (!status && error) {
+          return setError("createAccountError", {
+            message: error,
+          });
+        }
+        history.push(routes.home, {
+          message: "Successfully signed up! Please log in with your account",
+          username,
+          password,
         });
-      }
-      history.push(routes.home, {
-        message: "Successfully signed up! Please log in with your account",
-        username,
-        password,
-      });
-    },
-  });
+      },
+    }
+  );
   const onValidSubmit: SubmitHandler<createAccountVariables> = (data) => {
     if (loading) return;
     createAccount({

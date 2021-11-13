@@ -5,17 +5,15 @@ interface StyledProps {
 }
 
 const Input = styled.input<StyledProps>`
-  color: #000000;
   width: 100%;
   border-radius: 3px;
   padding: 7px;
-  background-color: #fafafa;
   border: 0.5px solid
     ${(props) => (props.hasError ? "#ff0000" : props.theme.borderColor)};
   margin-top: 5px;
   box-sizing: border-box;
   &::placeholder {
-    font-size: 12px;
+    font-size: 14px;
   }
   &:focus {
     border-color: rgb(38, 38, 38);

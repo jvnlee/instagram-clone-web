@@ -27,7 +27,6 @@ const SEE_FEED_QUERY = gql`
 
 function Home() {
   const { data, loading } = useQuery<seeFeed>(SEE_FEED_QUERY);
-  console.log(data, loading);
   return (
     <>
       <PageTitle title="Home" />

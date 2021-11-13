@@ -163,7 +163,7 @@ function Profile() {
           id: `User:${username}`,
           fields: {
             isFollowing: (prev) => !prev,
-            totalfollowers: (prev) => (isFollowing ? prev + 1 : prev - 1),
+            totalFollowers: (prev) => (isFollowing ? prev + 1 : prev - 1),
           },
         });
         cache.modify({
