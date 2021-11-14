@@ -10,6 +10,7 @@ import PageTitle from "../components/PageTitle";
 import { Button, FatText } from "../components/shared";
 import { PHOTO_FRAGMENT } from "../fragments";
 import useUser from "../hooks/useUser";
+import routes from "../routes";
 import {
   seeProfile,
   seeProfileVariables,
@@ -72,6 +73,7 @@ const RowContainer = styled.div`
 const Row = styled.div`
   font-size: 16px;
   display: flex;
+  align-items: center;
 `;
 
 const Username = styled.span`
@@ -158,6 +160,7 @@ function Profile() {
       },
       update: (cache, result) => {
         const { status, isFollowing } = result.data?.toggleFollow!;
+        console.log("here!");
         if (!status) return;
         cache.modify({
           id: `User:${username}`,
@@ -172,7 +175,6 @@ function Profile() {
             totalFollowing: (prev) => (isFollowing ? prev + 1 : prev - 1),
           },
         });
-        console.log(status, isFollowing);
       },
     }
   );
@@ -189,7 +191,11 @@ function Profile() {
   const createBtn = (seeProfile: seeProfile_seeProfile) => {
     const { isMe, isFollowing } = seeProfile;
     if (isMe) {
-      return <ProfileBtn>Edit Profile</ProfileBtn>;
+      return (
+        <Link to={routes.editProfile}>
+          <ProfileBtn>Edit Profile</ProfileBtn>
+        </Link>
+      );
     }
     if (isFollowing) {
       return <ProfileBtn onClick={() => toggleFollow()}>Unfollow</ProfileBtn>;

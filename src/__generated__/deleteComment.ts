@@ -10,7 +10,6 @@
 export interface deleteComment_deleteComment {
   __typename: "MutationResponse";
   status: boolean;
-  error: string | null;
 }
 
 export interface deleteComment {

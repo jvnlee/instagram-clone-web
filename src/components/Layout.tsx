@@ -1,10 +1,10 @@
-import { PropsWithChildren } from "react-router/node_modules/@types/react";
+import { PropsWithChildren } from "react";
 import styled from "styled-components";
 import Footer from "./Footer";
 import Header from "./Header";
 
 const Content = styled.main`
-  margin: 45px auto;
+  margin: 100px auto 45px;
   max-width: 930px;
   width: 100%;
 `;

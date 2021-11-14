@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react-router/node_modules/@types/react";
+import { PropsWithChildren } from "react";
 import styled from "styled-components";
 
 const SSignUpHeader = styled.div`

@@ -1,7 +1,7 @@
 import { useReactiveVar } from "@apollo/client";
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { PropsWithChildren } from "react-router/node_modules/@types/react";
+import { PropsWithChildren } from "react";
 import styled from "styled-components";
 import { disableDarkMode, enableDarkMode, isDarkModeVar } from "../../apollo";
 

@@ -5,6 +5,7 @@ import { ThemeProvider } from "styled-components";
 import { client, isDarkModeVar, isLoggedInVar } from "./apollo";
 import Layout from "./components/Layout";
 import routes from "./routes";
+import EditProfile from "./screens/EditProfile";
 import HashtagFeed from "./screens/HashtagFeed";
 import Home from "./screens/Home";
 import Login from "./screens/Login";
@@ -48,6 +49,11 @@ function App() {
                   <SignUp />
                 </Route>
               )}
+              <Route exact path={routes.editProfile}>
+                <Layout>
+                  <EditProfile />
+                </Layout>
+              </Route>
               <Route path={`/:username`}>
                 <Layout>
                   <Profile />

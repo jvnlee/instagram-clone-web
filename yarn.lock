@@ -1986,19 +1986,10 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react@*":
-  "integrity" "sha512-3Dt/A8gd3TCXi2aRe84y7cK1K8G+N9CZRDG8kDGguOKa0kf/ZkSwTmVIDPsm/KbQOVMaDJXwhBtuOXxqwdpWVg=="
-  "resolved" "https://registry.npmjs.org/@types/react/-/react-17.0.30.tgz"
-  "version" "17.0.30"
-  dependencies:
-    "@types/prop-types" "*"
-    "@types/scheduler" "*"
-    "csstype" "^3.0.2"
-
-"@types/react@^17.0.31":
-  "integrity" "sha512-MQSR5EL4JZtdWRvqDgz9kXhSDDoy2zMTYyg7UhP+FZ5ttUOocWyxiqFJiI57sUG0BtaEX7WDXYQlkCYkb3X9vQ=="
-  "resolved" "https://registry.npmjs.org/@types/react/-/react-17.0.31.tgz"
-  "version" "17.0.31"
+"@types/react@*", "@types/react@^17.0.34":
+  "integrity" "sha512-46FEGrMjc2+8XhHXILr+3+/sTe3OfzSPU9YGKILLrUYbQ1CLQC9Daqo1KzENGXAWwrFwiY0l4ZbF20gRvgpWTg=="
+  "resolved" "https://registry.npmjs.org/@types/react/-/react-17.0.34.tgz"
+  "version" "17.0.34"
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"

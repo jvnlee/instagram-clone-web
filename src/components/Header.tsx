@@ -9,13 +9,16 @@ import { isLoggedInVar } from "../apollo";
 import useUser from "../hooks/useUser";
 import routes from "../routes";
 import Avatar from "./Avatar";
-import { BaseBox, Button } from "./shared";
+import { BaseBox, Button, FatText } from "./shared";
 import gql from "graphql-tag";
+import { searchUser, searchUserVariables } from "../__generated__/searchUser";
+import { useState } from "react";
+import { useHistory } from "react-router";
 
 const SEARCH_USER_QUERY = gql`
   query searchUser($keyword: String!, $lastId: Int) {
     searchUser(keyword: $keyword, lastId: $lastId) {
-      user {
+      searchResult {
         id
         username
         avatar
@@ -33,6 +36,8 @@ const SHeader = styled(BaseBox)`
   align-items: center;
   border-bottom: 1px solid ${(props) => props.theme.borderColor};
   padding: 14px 0px;
+  position: fixed;
+  top: 0;
 `;
 
 const Wrapper = styled.div`
@@ -68,68 +73,170 @@ const Icon = styled.span`
 
 const LoginBtn = styled(Button)``;
 
+const ModalContainer = styled.div`
+  position: fixed;
+  top: 55px;
+  left: calc(50vw - 215px);
+  z-index: 9999;
+`;
+
+const Modal = styled.div`
+  background-color: ${(props) => props.theme.bgColor};
+  border: 1px solid ${(props) => props.theme.borderColor};
+  padding: 15px;
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 6px;
+  box-shadow: 0 -6px 0 #fff, 0 1px 6px rgba(0, 0, 0, 0.35);
+  overflow: scroll;
+`;
+
+const UserContainer = styled.div`
+  display: flex;
+  margin-bottom: 20px;
+`;
+
+const TextContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+`;
+
+const Username = styled(FatText)``;
+
+const Name = styled.span`
+  opacity: 0.7;
+  margin-top: 5px;
+`;
+
+const Error = styled.span`
+  opacity: 0.7;
+`;
+
 function Header() {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const { data: userData } = useUser();
-  const { register, getValues, watch } = useForm({
+  const [modalOn, setModalOn] = useState<boolean>(false);
+  const {
+    register,
+    watch,
+    handleSubmit,
+    formState: { errors },
+    setError,
+    clearErrors,
+    setValue,
+  } = useForm({
     mode: "onChange",
   });
-  const { keyword } = getValues();
-  const { loading, data } = useQuery(SEARCH_USER_QUERY, {
-    variables: { keyword },
-  });
-  console.log(watch());
-  loading ? console.log("loading...") : console.log(data);
+  const { keyword } = watch();
+  const { data } = useQuery<searchUser, searchUserVariables>(
+    SEARCH_USER_QUERY,
+    {
+      variables: { keyword },
+      onCompleted: (data) => {
+        const { searchResult, error } = data?.searchUser!;
+        if (searchResult?.length === 0 || error) {
+          return setError("searchUserError", {
+            message: error!,
+          });
+        } else {
+          clearErrors("searchUserError");
+        }
+      },
+    }
+  );
+  const history = useHistory();
+  const onValidSubmit = () => {
+    if (
+      data?.searchUser.searchResult &&
+      data?.searchUser.searchResult.length > 0
+    ) {
+      history.push(`/${data?.searchUser?.searchResult[0]?.username}`);
+    }
+    setModalOn(false);
+    setValue("keyword", "");
+  };
+
   return (
-    <SHeader>
-      <Wrapper>
-        <Column>
-          <Link to={routes.home}>
-            <FontAwesomeIcon icon={faInstagram} size="2x" />
-          </Link>
-        </Column>
-        <Column>
-          <form>
-            <SearchBar
-              {...register("keyword", { required: true })}
-              type="text"
-              placeholder="Search"
-            />
-          </form>
-        </Column>
-        <Column>
-          {isLoggedIn ? (
-            <IconsContainer>
-              <Icon>
-                <Link to={routes.home}>
-                  <FontAwesomeIcon icon={faHome} />
-                </Link>
-              </Icon>
-              <Icon>
-                <FontAwesomeIcon icon={faCompass} />
-              </Icon>
-              {userData?.me?.avatar ? (
-                <Icon>
-                  <Link to={`/${userData?.me?.username}`}>
-                    <Avatar size="22" url={userData?.me?.avatar} />
-                  </Link>
-                </Icon>
-              ) : (
-                <Icon>
-                  <Link to={`/${userData?.me?.username}`}>
-                    <FontAwesomeIcon icon={faUser} />
-                  </Link>
-                </Icon>
-              )}
-            </IconsContainer>
-          ) : (
+    <>
+      <SHeader>
+        <Wrapper>
+          <Column>
             <Link to={routes.home}>
-              <LoginBtn>Log in</LoginBtn>
+              <FontAwesomeIcon icon={faInstagram} size="2x" />
             </Link>
-          )}
-        </Column>
-      </Wrapper>
-    </SHeader>
+          </Column>
+          <Column>
+            <form onSubmit={handleSubmit(onValidSubmit)}>
+              <SearchBar
+                {...register("keyword", {
+                  required: true,
+                })}
+                type="text"
+                placeholder="Search"
+                autoComplete="off"
+                onFocus={() => setModalOn(true)}
+                onBlur={() => setModalOn(false)}
+              />
+            </form>
+          </Column>
+          <Column>
+            {isLoggedIn ? (
+              <IconsContainer>
+                <Icon>
+                  <Link to={routes.home}>
+                    <FontAwesomeIcon icon={faHome} />
+                  </Link>
+                </Icon>
+                <Icon>
+                  <FontAwesomeIcon icon={faCompass} />
+                </Icon>
+                {userData?.me?.avatar ? (
+                  <Icon>
+                    <Link to={`/${userData?.me?.username}`}>
+                      <Avatar size="22" url={userData?.me?.avatar} />
+                    </Link>
+                  </Icon>
+                ) : (
+                  <Icon>
+                    <Link to={`/${userData?.me?.username}`}>
+                      <FontAwesomeIcon icon={faUser} />
+                    </Link>
+                  </Icon>
+                )}
+              </IconsContainer>
+            ) : (
+              <Link to={routes.home}>
+                <LoginBtn>Log in</LoginBtn>
+              </Link>
+            )}
+          </Column>
+        </Wrapper>
+      </SHeader>
+      {modalOn ? (
+        <ModalContainer>
+          <Modal>
+            {data?.searchUser.searchResult?.map((user) => (
+              <UserContainer key={user?.id}>
+                <Link to={`/${user?.username}`}>
+                  <Avatar size="32" url={user?.avatar} />
+                </Link>
+                <Link to={`/${user?.username}`}>
+                  <TextContainer>
+                    <Username>{user?.username}</Username>
+                    <Name>
+                      {user?.firstName} {user?.lastName!}
+                    </Name>
+                  </TextContainer>
+                </Link>
+              </UserContainer>
+            ))}
+            <Error>{errors?.searchUserError?.message!}</Error>
+          </Modal>
+        </ModalContainer>
+      ) : null}
+    </>
   );
 }
 
