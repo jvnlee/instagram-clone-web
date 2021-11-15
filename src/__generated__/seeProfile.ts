@@ -23,6 +23,7 @@ export interface seeProfile_seeProfile {
   username: string;
   bio: string | null;
   avatar: string | null;
+  email: string;
   photos: (seeProfile_seeProfile_photos | null)[] | null;
   totalFollowing: number;
   totalFollowers: number;

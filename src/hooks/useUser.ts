@@ -10,13 +10,17 @@ const ME_QUERY = gql`
       id
       username
       avatar
+      email
+      firstName
+      lastName
+      bio
     }
   }
 `;
 
 function useUser() {
   const hasToken = useReactiveVar(isLoggedInVar);
-  const { data } = useQuery<me>(ME_QUERY, {
+  const { data, loading } = useQuery<me>(ME_QUERY, {
     skip: !hasToken,
     fetchPolicy: "no-cache",
   });
@@ -25,7 +29,7 @@ function useUser() {
       logUserOut();
     }
   }, [data]);
-  return { data };
+  return { data, loading };
 }
 
 export default useUser;

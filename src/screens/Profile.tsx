@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import gql from "graphql-tag";
-import { useParams } from "react-router";
+import { useHistory, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Avatar from "../components/Avatar";
@@ -37,6 +37,7 @@ const SEE_PROFILE_QUERY = gql`
       username
       bio
       avatar
+      email
       photos {
         ...PhotoFragment
       }
@@ -151,6 +152,7 @@ const ProfileBtn = styled(Button)`
 function Profile() {
   const { username } = useParams<ParamsType>();
   const { data: userData } = useUser();
+  const history = useHistory();
 
   const [toggleFollow] = useMutation<toggleFollow, toggleFollowVariables>(
     TOGGLE_FOLLOW_MUTATION,
@@ -160,7 +162,6 @@ function Profile() {
       },
       update: (cache, result) => {
         const { status, isFollowing } = result.data?.toggleFollow!;
-        console.log("here!");
         if (!status) return;
         cache.modify({
           id: `User:${username}`,
@@ -188,13 +189,23 @@ function Profile() {
     }
   );
 
+  const moveToEditProfile = () => {
+    history.push(routes.editProfile, {
+      email: data?.seeProfile?.email,
+      firstName: data?.seeProfile?.firstName,
+      lastName: data?.seeProfile?.lastName,
+      username: data?.seeProfile?.username,
+      bio: data?.seeProfile?.bio,
+    });
+  };
+
   const createBtn = (seeProfile: seeProfile_seeProfile) => {
     const { isMe, isFollowing } = seeProfile;
     if (isMe) {
       return (
-        <Link to={routes.editProfile}>
-          <ProfileBtn>Edit Profile</ProfileBtn>
-        </Link>
+        <ProfileBtn onClick={() => moveToEditProfile()}>
+          Edit Profile
+        </ProfileBtn>
       );
     }
     if (isFollowing) {

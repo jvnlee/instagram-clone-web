@@ -20,6 +20,7 @@ export interface seeHashtag_seeHashtag {
   __typename: "Hashtag";
   hashtag: string;
   photos: (seeHashtag_seeHashtag_photos | null)[] | null;
+  totalPhotos: number;
 }
 
 export interface seeHashtag {

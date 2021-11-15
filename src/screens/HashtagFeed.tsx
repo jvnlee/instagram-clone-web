@@ -9,6 +9,7 @@ import styled from "styled-components";
 import { seeHashtag, seeHashtagVariables } from "../__generated__/seeHashtag";
 import Avatar from "../components/Avatar";
 import { FatText } from "../components/shared";
+import { Link } from "react-router-dom";
 
 interface ParamsType {
   hashtag: string;
@@ -25,6 +26,7 @@ const SEE_HASHTAG_QUERY = gql`
       photos {
         ...PhotoFragment
       }
+      totalPhotos
     }
   }
   ${PHOTO_FRAGMENT}
@@ -130,7 +132,7 @@ function HashtagFeed() {
             <ItemContainer>
               <Item>
                 <span>
-                  <Value>{data?.seeHashtag?.photos?.length}</Value> posts
+                  <Value>{data?.seeHashtag?.totalPhotos}</Value> posts
                 </span>
               </Item>
             </ItemContainer>
@@ -140,16 +142,18 @@ function HashtagFeed() {
       <PhotoGrid>
         {data?.seeHashtag?.photos?.map((photo) => (
           <Photo key={photo?.id} url={photo?.file}>
-            <PhotoIconContainer>
-              <PhotoIcon>
-                <FontAwesomeIcon icon={faHeart} />
-                {photo?.likes}
-              </PhotoIcon>
-              <PhotoIcon>
-                <FontAwesomeIcon icon={faComment} />
-                {photo?.commentNum}
-              </PhotoIcon>
-            </PhotoIconContainer>
+            <Link to={`/posts/${photo?.id}`}>
+              <PhotoIconContainer>
+                <PhotoIcon>
+                  <FontAwesomeIcon icon={faHeart} />
+                  {photo?.likes}
+                </PhotoIcon>
+                <PhotoIcon>
+                  <FontAwesomeIcon icon={faComment} />
+                  {photo?.commentNum}
+                </PhotoIcon>
+              </PhotoIconContainer>
+            </Link>
           </Photo>
         ))}
       </PhotoGrid>

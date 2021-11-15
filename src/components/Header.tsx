@@ -89,7 +89,7 @@ const Modal = styled.div`
   height: 300px;
   border-radius: 6px;
   box-shadow: 0 -6px 0 #fff, 0 1px 6px rgba(0, 0, 0, 0.35);
-  overflow: scroll;
+  overflow-y: scroll;
 `;
 
 const UserContainer = styled.div`
