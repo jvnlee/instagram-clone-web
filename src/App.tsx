@@ -45,7 +45,7 @@ function App() {
                 </Layout>
               </Route>
               {isLoggedIn ? null : (
-                <Route path={routes.signUp}>
+                <Route exact path={routes.signUp}>
                   <SignUp />
                 </Route>
               )}
