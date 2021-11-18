@@ -12,11 +12,12 @@ import {
   editProfileVariables,
 } from "../__generated__/editProfile";
 import Input from "../components/auth/Input";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import routes from "../routes";
+import Avatar from "../components/Avatar";
 
 interface FormProps {
+  avatar?: string;
   email?: string;
   firstName?: string;
   lastName?: string;
@@ -67,6 +68,7 @@ const Tab = styled.div`
   align-items: center;
   padding-left: 30px;
   border-bottom: 1px solid ${(props) => props.theme.borderColor};
+  cursor: pointer;
   :first-child {
     border-left: 3px solid ${(props) => props.theme.fontColor};
   }
@@ -93,6 +95,30 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  :first-child {
+    margin-left: 60px;
+  }
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-left: 32px;
+  line-height: 1.8em;
+`;
+
+const Username = styled.span`
+  font-size: 20px;
+`;
+
+const Label = styled.label`
+  color: ${(props) => props.theme.accent};
+  font-weight: 600;
+  cursor: pointer;
+`;
+
+const AvatarInput = styled.input`
+  display: none;
 `;
 
 const InputName = styled(FatText)`
@@ -121,10 +147,8 @@ function EditProfile() {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isValid },
     getValues,
-    setValue,
     setError,
     clearErrors,
   } = useForm<FormProps>({
@@ -137,13 +161,25 @@ function EditProfile() {
     },
   });
 
-  const [editProfile, { loading }] = useMutation<
+  const moveWithProfile = () => {
+    history.push(routes.changePassword, {
+      avatar: location.state.avatar,
+      email: location.state.email,
+      firstName: location.state.firstName,
+      lastName: location.state.lastName,
+      username: location.state.username,
+      bio: location.state.bio,
+    });
+  };
+
+  const [editProfile, { data, loading }] = useMutation<
     editProfile,
     editProfileVariables
   >(EDIT_PROFILE_MUTATION, {
     update: (cache, result) => {
+      console.log(result);
       const { status, error } = result.data?.editProfile!;
-      const { email, firstName, lastName, username, bio } = getValues();
+      const { avatar, email, firstName, lastName, username, bio } = getValues();
       if (!status && error) {
         return setError("editProfileError", {
           message: error,
@@ -152,6 +188,7 @@ function EditProfile() {
       cache.modify({
         id: `User:${username}`,
         fields: {
+          avatar: (prev) => avatar,
           email: (prev) => email,
           firstName: (prev) => firstName,
           lastName: (prev) => lastName,
@@ -178,14 +215,20 @@ function EditProfile() {
           <Tab>
             <TabName>Edit Profile</TabName>
           </Tab>
-          <Tab>
-            <Link to={routes.changePassword}>
-              <TabName>Change Password</TabName>
-            </Link>
+          <Tab onClick={moveWithProfile}>
+            <TabName>Change Password</TabName>
           </Tab>
         </SideMenu>
         <ContentBox>
           <Form onSubmit={handleSubmit(onValidSubmit)}>
+            <Row>
+              <Avatar size="40" url={location.state.avatar} />
+              <Wrapper>
+                <Username>{location.state.username}</Username>
+                <Label htmlFor="avatar">Change Profile Photo</Label>
+                <AvatarInput {...register("avatar")} id="avatar" type="file" />
+              </Wrapper>
+            </Row>
             <Row>
               <InputName>Email</InputName>
               <EditProfileInput

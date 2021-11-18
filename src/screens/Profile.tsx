@@ -191,6 +191,7 @@ function Profile() {
 
   const moveToEditProfile = () => {
     history.push(routes.editProfile, {
+      avatar: data?.seeProfile?.avatar,
       email: data?.seeProfile?.email,
       firstName: data?.seeProfile?.firstName,
       lastName: data?.seeProfile?.lastName,
