@@ -1,5 +1,5 @@
-import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { useMutation } from "@apollo/client";
+import { SubmitHandler, useForm } from "react-hook-form";
 import styled from "styled-components";
 import FormError from "../components/auth/FormError";
 import Input from "../components/auth/Input";
@@ -9,6 +9,18 @@ import { BaseBox, FatText } from "../components/shared";
 import routes from "../routes";
 import { useHistory, useLocation } from "react-router";
 import gql from "graphql-tag";
+import {
+  changePassword,
+  changePasswordVariables,
+} from "../__generated__/changePassword";
+import { logUserOut } from "../apollo";
+
+interface FormProps {
+  password: string;
+  newPassword: string;
+  confirmNewPassword: string;
+  changePasswordError: string;
+}
 
 interface LocationStateProps {
   avatar?: string;
@@ -19,9 +31,9 @@ interface LocationStateProps {
   bio?: string;
 }
 
-const EDIT_PROFILE_MUTATION = gql`
-  mutation editProfile($password: String) {
-    editProfile(password: $password) {
+const CHANGE_PASSWORD_MUTATION = gql`
+  mutation changePassword($password: String!, $newPassword: String!) {
+    editProfile(password: $password, newPassword: $newPassword) {
       status
       error
     }
@@ -97,6 +109,35 @@ function ChangePassword() {
   const history = useHistory();
   const location = useLocation<LocationStateProps>();
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    getValues,
+    setError,
+    clearErrors,
+  } = useForm<FormProps>({
+    mode: "onChange",
+  });
+
+  const [changePassword, { loading }] = useMutation<changePassword>(
+    CHANGE_PASSWORD_MUTATION,
+    {
+      onCompleted: (data) => {
+        const { status, error } = data?.editProfile;
+        if (!status && error) {
+          return setError("changePasswordError", {
+            message: error,
+          });
+        }
+        logUserOut();
+        history.push(routes.home, {
+          message:
+            "Update successful! Please login again with your new password.",
+        });
+      },
+    }
+  );
   const moveToEditProfile = () => {
     history.push(routes.editProfile, {
       avatar: location.state.avatar,
@@ -108,16 +149,19 @@ function ChangePassword() {
     });
   };
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
-    getValues,
-    setError,
-    clearErrors,
-  } = useForm();
+  const onValidSubmit: SubmitHandler<changePasswordVariables> = (data) => {
+    if (loading) return;
+    changePassword({
+      variables: { ...data },
+    });
+  };
 
-  const onValidSubmit = () => {};
+  const clearChangePasswordError = () => {
+    clearErrors("changePasswordError");
+  };
+
+  const { newPassword, confirmNewPassword } = getValues();
+  console.log(isValid, loading);
 
   return (
     <>
@@ -136,23 +180,32 @@ function ChangePassword() {
             <Row>
               <InputName>Old Password</InputName>
               <EditProfileInput
-                {...register("oldPassword", { required: true })}
-                type="text"
-                // onFocus={clearCreateAccountError}
+                {...register("password", {
+                  required: "Password item is required.",
+                })}
+                type="password"
+                hasError={Boolean(errors?.password?.message)}
+                onFocus={clearChangePasswordError}
               />
-              <FormError message={errors?.email?.message} />
+              <FormError message={errors.password?.message} />
             </Row>
             <Row>
               <InputName>New Password</InputName>
               <EditProfileInput
                 {...register("newPassword", {
-                  required: true,
+                  required: "New password item is required.",
+                  minLength: {
+                    value: 3,
+                    message: "Must be longer than 3 characters.",
+                  },
+                  validate: (currentValue) => currentValue.length >= 3,
                 })}
-                type="text"
+                type="password"
+                hasError={Boolean(errors?.newPassword?.message)}
               />
-              <FormError message={errors?.firstName?.message} />
+              <FormError message={errors.newPassword?.message} />
             </Row>
-            <Row>
+            {/* <Row>
               <InputName>
                 Confirm
                 <br />
@@ -160,25 +213,22 @@ function ChangePassword() {
               </InputName>
               <EditProfileInput
                 {...register("confirmNewPassword", {
-                  required: true,
-                  minLength: {
-                    value: 3,
-                    message: "Username should be longer than 3 characters.",
-                  },
-                  // validate: (currentValue) => currentValue.length >= 3,
+                  required: "Password does not match. Please try again.",
+                  validate: (currentValue) =>
+                    newPassword === confirmNewPassword,
                 })}
-                type="text"
-                // onFocus={clearCreateAccountError}
+                type="password"
+                hasError={Boolean(errors.confirmNewPassword?.message)}
               />
-            </Row>
+            </Row> */}
             <Row>
               <InputName />
               <Submit
                 type="submit"
                 value="Submit"
-                // disabled={!isValid || loading}
+                disabled={!isValid || loading}
               />
-              {/* <FormError message={errors?.createAccountError?.message} /> */}
+              <FormError message={errors?.changePasswordError?.message} />
             </Row>
           </Form>
         </ContentBox>

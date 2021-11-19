@@ -12,7 +12,6 @@ import {
   editProfileVariables,
 } from "../__generated__/editProfile";
 import Input from "../components/auth/Input";
-import { Link } from "react-router-dom";
 import routes from "../routes";
 import Avatar from "../components/Avatar";
 
@@ -32,7 +31,6 @@ const EDIT_PROFILE_MUTATION = gql`
     $lastName: String
     $username: String
     $email: String
-    $password: String
     $bio: String
     $avatar: Upload
   ) {
@@ -41,7 +39,6 @@ const EDIT_PROFILE_MUTATION = gql`
       lastName: $lastName
       username: $username
       email: $email
-      password: $password
       bio: $bio
       avatar: $avatar
     ) {
@@ -172,33 +169,34 @@ function EditProfile() {
     });
   };
 
-  const [editProfile, { data, loading }] = useMutation<
-    editProfile,
-    editProfileVariables
-  >(EDIT_PROFILE_MUTATION, {
-    update: (cache, result) => {
-      console.log(result);
-      const { status, error } = result.data?.editProfile!;
-      const { avatar, email, firstName, lastName, username, bio } = getValues();
-      if (!status && error) {
-        return setError("editProfileError", {
-          message: error,
+  const [editProfile, { loading }] = useMutation<editProfile>(
+    EDIT_PROFILE_MUTATION,
+    {
+      update: (cache, result) => {
+        console.log(result);
+        const { status, error } = result.data?.editProfile!;
+        const { avatar, email, firstName, lastName, username, bio } =
+          getValues();
+        if (!status && error) {
+          return setError("editProfileError", {
+            message: error,
+          });
+        }
+        cache.modify({
+          id: `User:${username}`,
+          fields: {
+            avatar: (prev) => avatar,
+            email: (prev) => email,
+            firstName: (prev) => firstName,
+            lastName: (prev) => lastName,
+            username: (prev) => username,
+            bio: (prev) => bio,
+          },
         });
-      }
-      cache.modify({
-        id: `User:${username}`,
-        fields: {
-          avatar: (prev) => avatar,
-          email: (prev) => email,
-          firstName: (prev) => firstName,
-          lastName: (prev) => lastName,
-          username: (prev) => username,
-          bio: (prev) => bio,
-        },
-      });
-      history.push(`/${username}`);
-    },
-  });
+        history.push(`/${username}`);
+      },
+    }
+  );
 
   const onValidSubmit: SubmitHandler<editProfileVariables> = (data) => {
     if (loading) return;

@@ -22,7 +22,6 @@ export interface editProfileVariables {
   lastName?: string | null;
   username?: string | null;
   email?: string | null;
-  password?: string | null;
   bio?: string | null;
   avatar?: any | null;
 }
