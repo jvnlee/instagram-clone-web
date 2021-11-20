@@ -223,58 +223,65 @@ function Profile() {
   return (
     <>
       <PageTitle title={loading ? "Loading" : pageTitle} />
-      <Header>
-        <Avatar size="150" url={data?.seeProfile?.avatar} />
-        <RowContainer>
-          <Row>
-            <Username>{data?.seeProfile?.username}</Username>
-            {data?.seeProfile ? createBtn(data.seeProfile) : null}
-          </Row>
-          <Row>
-            <ItemContainer>
-              <Item>
-                <span>
-                  <Value>{data?.seeProfile?.photos?.length}</Value> posts
-                </span>
-              </Item>
-              <Item>
-                <span>
-                  <Value>{data?.seeProfile?.totalFollowers}</Value> followers
-                </span>
-              </Item>
-              <Item>
-                <span>
-                  <Value>{data?.seeProfile?.totalFollowing}</Value> following
-                </span>
-              </Item>
-            </ItemContainer>
-          </Row>
-          <Row>
-            <Name>
-              {data?.seeProfile?.firstName}&nbsp;{data?.seeProfile?.lastName}
-            </Name>
-          </Row>
-          <Row>{data?.seeProfile?.bio}</Row>
-        </RowContainer>
-      </Header>
-      <PhotoGrid>
-        {data?.seeProfile?.photos?.map((photo) => (
-          <Photo key={photo?.id} url={photo?.file}>
-            <Link to={`/posts/${photo?.id}`}>
-              <PhotoIconContainer>
-                <PhotoIcon>
-                  <FontAwesomeIcon icon={faHeart} />
-                  {photo?.likes}
-                </PhotoIcon>
-                <PhotoIcon>
-                  <FontAwesomeIcon icon={faComment} />
-                  {photo?.commentNum}
-                </PhotoIcon>
-              </PhotoIconContainer>
-            </Link>
-          </Photo>
-        ))}
-      </PhotoGrid>
+      {loading ? null : (
+        <>
+          <Header>
+            <Avatar size="150" url={data?.seeProfile?.avatar} />
+            <RowContainer>
+              <Row>
+                <Username>{data?.seeProfile?.username}</Username>
+                {data?.seeProfile ? createBtn(data.seeProfile) : null}
+              </Row>
+              <Row>
+                <ItemContainer>
+                  <Item>
+                    <span>
+                      <Value>{data?.seeProfile?.photos?.length}</Value> posts
+                    </span>
+                  </Item>
+                  <Item>
+                    <span>
+                      <Value>{data?.seeProfile?.totalFollowers}</Value>{" "}
+                      followers
+                    </span>
+                  </Item>
+                  <Item>
+                    <span>
+                      <Value>{data?.seeProfile?.totalFollowing}</Value>{" "}
+                      following
+                    </span>
+                  </Item>
+                </ItemContainer>
+              </Row>
+              <Row>
+                <Name>
+                  {data?.seeProfile?.firstName}&nbsp;
+                  {data?.seeProfile?.lastName}
+                </Name>
+              </Row>
+              <Row>{data?.seeProfile?.bio}</Row>
+            </RowContainer>
+          </Header>
+          <PhotoGrid>
+            {data?.seeProfile?.photos?.map((photo) => (
+              <Photo key={photo?.id} url={photo?.file}>
+                <Link to={`/posts/${photo?.id}`}>
+                  <PhotoIconContainer>
+                    <PhotoIcon>
+                      <FontAwesomeIcon icon={faHeart} />
+                      {photo?.likes}
+                    </PhotoIcon>
+                    <PhotoIcon>
+                      <FontAwesomeIcon icon={faComment} />
+                      {photo?.commentNum}
+                    </PhotoIcon>
+                  </PhotoIconContainer>
+                </Link>
+              </Photo>
+            ))}
+          </PhotoGrid>
+        </>
+      )}
     </>
   );
 }

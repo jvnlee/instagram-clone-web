@@ -112,7 +112,9 @@ function SignUp() {
           />
           <FormError message={errors?.email?.message} />
           <Input
-            {...register("firstName", { required: "First name is required." })}
+            {...register("firstName", {
+              required: "First name is required.",
+            })}
             type="text"
             placeholder="First Name"
           />

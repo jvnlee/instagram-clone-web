@@ -14,15 +14,16 @@ import {
 import Input from "../components/auth/Input";
 import routes from "../routes";
 import Avatar from "../components/Avatar";
+import useUser from "../hooks/useUser";
 
 interface FormProps {
-  avatar?: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  username?: string;
-  bio?: string;
-  editProfileError?: string;
+  avatar: string;
+  email: string;
+  firstName: string;
+  lastName: string | null;
+  username: string;
+  bio: string | null;
+  editProfileError: string;
 }
 
 const EDIT_PROFILE_MUTATION = gql`
@@ -140,6 +141,7 @@ const Submit = styled(SubmitButton)`
 function EditProfile() {
   const history = useHistory();
   const location = useLocation<FormProps>();
+  const { data: userData, loading: userLoading } = useUser();
 
   const {
     register,
@@ -149,14 +151,25 @@ function EditProfile() {
     setError,
     clearErrors,
   } = useForm<FormProps>({
+    mode: "onChange",
     defaultValues: {
-      email: location.state.email,
-      firstName: location.state.firstName,
-      lastName: location.state.lastName,
-      username: location.state.username,
-      bio: location.state.bio,
+      email: "",
+      firstName: "",
+      lastName: "",
+      username: "",
+      bio: "",
     },
   });
+
+  // {
+  //   defaultValues: {
+  //     email: location.state.email,
+  //     firstName: location.state.firstName,
+  //     lastName: location.state.lastName,
+  //     username: location.state.username,
+  //     bio: location.state.bio,
+  //   },
+  // }
 
   const moveWithProfile = () => {
     history.push(routes.changePassword, {
@@ -183,7 +196,7 @@ function EditProfile() {
           });
         }
         cache.modify({
-          id: `User:${username}`,
+          id: `User:${userData?.me?.username}`,
           fields: {
             avatar: (prev) => avatar,
             email: (prev) => email,
@@ -193,6 +206,7 @@ function EditProfile() {
             bio: (prev) => bio,
           },
         });
+        console.log(username);
         history.push(`/${username}`);
       },
     }
@@ -203,6 +217,10 @@ function EditProfile() {
     editProfile({
       variables: { ...data },
     });
+  };
+
+  const clearEditProfileError = () => {
+    clearErrors("editProfileError");
   };
 
   return (
@@ -218,79 +236,96 @@ function EditProfile() {
           </Tab>
         </SideMenu>
         <ContentBox>
-          <Form onSubmit={handleSubmit(onValidSubmit)}>
-            <Row>
-              <Avatar size="40" url={location.state.avatar} />
-              <Wrapper>
-                <Username>{location.state.username}</Username>
-                <Label htmlFor="avatar">Change Profile Photo</Label>
-                <AvatarInput {...register("avatar")} id="avatar" type="file" />
-              </Wrapper>
-            </Row>
-            <Row>
-              <InputName>Email</InputName>
-              <EditProfileInput
-                {...register("email", { required: "Email is required." })}
-                type="text"
-                placeholder="Email"
-                // onFocus={clearCreateAccountError}
-              />
-              <FormError message={errors?.email?.message} />
-            </Row>
-            <Row>
-              <InputName>First Name</InputName>
-              <EditProfileInput
-                {...register("firstName", {
-                  required: "First name is required.",
-                })}
-                type="text"
-                placeholder="First Name"
-              />
-              <FormError message={errors?.firstName?.message} />
-            </Row>
-            <Row>
-              <InputName>Last Name</InputName>
-              <EditProfileInput
-                {...register("lastName")}
-                type="text"
-                placeholder="Last Name"
-              />
-            </Row>
-            <Row>
-              <InputName>Username</InputName>
-              <EditProfileInput
-                {...register("username", {
-                  required: "Username is required.",
-                  minLength: {
-                    value: 3,
-                    message: "Username should be longer than 3 characters.",
-                  },
-                  // validate: (currentValue) => currentValue.length >= 3,
-                })}
-                type="text"
-                placeholder="Username"
-                // onFocus={clearCreateAccountError}
-              />
-            </Row>
-            <Row>
-              <InputName>Bio</InputName>
-              <EditProfileInput
-                {...register("bio")}
-                type="text"
-                placeholder="Bio"
-              />
-              <FormError message={errors?.username?.message} />
-            </Row>
-            <Row>
-              <InputName />
-              <Submit
-                type="submit"
-                value="Submit"
-                // disabled={!isValid || loading}
-              />
-              {/* <FormError message={errors?.createAccountError?.message} /> */}
-            </Row>
-          </Form>
+          {userLoading ? null : (
+            <Form onSubmit={handleSubmit(onValidSubmit)}>
+              {/* <Row>
+                <Avatar size="40" url={userData?.me?.avatar} />
+                <Wrapper>
+                  <Username>{userData?.me?.username}</Username>
+                  <Label htmlFor="avatar">Change Profile Photo</Label>
+                  <AvatarInput
+                    {...register("avatar")}
+                    id="avatar"
+                    type="file"
+                  />
+                </Wrapper>
+              </Row> */}
+              <Row>
+                <InputName>Email</InputName>
+                <EditProfileInput
+                  {...register("email", {
+                    required: "Email is required.",
+                    // value: userData?.me?.email,
+                    validate: (v) => v.length > 0,
+                  })}
+                  type="text"
+                  placeholder="Email"
+                  // onFocus={clearCreateAccountError}
+                />
+                <FormError message={errors?.email?.message} />
+              </Row>
+              <Row>
+                <InputName>First Name</InputName>
+                <EditProfileInput
+                  {...register("firstName", {
+                    required: "First name is required.",
+                    value: userData?.me?.firstName,
+                  })}
+                  type="text"
+                  placeholder="First Name"
+                  // onFocus={clearEditProfileError}
+                />
+                <FormError message={errors?.firstName?.message} />
+              </Row>
+              <Row>
+                <InputName>Last Name</InputName>
+                <EditProfileInput
+                  {...register("lastName", {
+                    value: userData?.me?.lastName,
+                  })}
+                  type="text"
+                  placeholder="Last Name"
+                />
+              </Row>
+              <Row>
+                <InputName>Username</InputName>
+                <EditProfileInput
+                  {...register("username", {
+                    required: "Username is required.",
+                    value: userData?.me?.username,
+                    minLength: {
+                      value: 3,
+                      message: "Username should be longer than 3 characters.",
+                    },
+                    validate: (v) => v.length >= 3,
+                  })}
+                  type="text"
+                  placeholder="Username"
+                  onFocus={clearEditProfileError}
+                />
+                <FormError message={errors?.username?.message} />
+              </Row>
+              <Row>
+                <InputName>Bio</InputName>
+                <EditProfileInput
+                  {...register("bio", {
+                    value: userData?.me?.bio,
+                  })}
+                  type="text"
+                  placeholder="Bio"
+                />
+              </Row>
+              <Row>
+                <InputName />
+                <Submit
+                  type="submit"
+                  value="Submit"
+                  disabled={!isValid || loading}
+                />
+                {/* <FormError message={errors?.createAccountError?.message} /> */}
+              </Row>
+            </Form>
+          )}
         </ContentBox>
       </Container>
     </>

@@ -7,14 +7,14 @@
 // GraphQL mutation operation: changePassword
 // ====================================================
 
-export interface changePassword_editProfile {
+export interface changePassword_changePassword {
   __typename: "MutationResponse";
   status: boolean;
   error: string | null;
 }
 
 export interface changePassword {
-  editProfile: changePassword_editProfile;
+  changePassword: changePassword_changePassword;
 }
 
 export interface changePasswordVariables {

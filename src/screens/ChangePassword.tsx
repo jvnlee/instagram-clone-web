@@ -33,7 +33,7 @@ interface LocationStateProps {
 
 const CHANGE_PASSWORD_MUTATION = gql`
   mutation changePassword($password: String!, $newPassword: String!) {
-    editProfile(password: $password, newPassword: $newPassword) {
+    changePassword(password: $password, newPassword: $newPassword) {
       status
       error
     }
@@ -124,7 +124,8 @@ function ChangePassword() {
     CHANGE_PASSWORD_MUTATION,
     {
       onCompleted: (data) => {
-        const { status, error } = data?.editProfile;
+        const { status, error } = data.changePassword;
+        const username = location.state.username;
         if (!status && error) {
           return setError("changePasswordError", {
             message: error,
@@ -134,10 +135,12 @@ function ChangePassword() {
         history.push(routes.home, {
           message:
             "Update successful! Please login again with your new password.",
+          username,
         });
       },
     }
   );
+
   const moveToEditProfile = () => {
     history.push(routes.editProfile, {
       avatar: location.state.avatar,
@@ -160,8 +163,7 @@ function ChangePassword() {
     clearErrors("changePasswordError");
   };
 
-  const { newPassword, confirmNewPassword } = getValues();
-  console.log(isValid, loading);
+  const { newPassword } = getValues();
 
   return (
     <>
@@ -180,9 +182,7 @@ function ChangePassword() {
             <Row>
               <InputName>Old Password</InputName>
               <EditProfileInput
-                {...register("password", {
-                  required: "Password item is required.",
-                })}
+                {...register("password")}
                 type="password"
                 hasError={Boolean(errors?.password?.message)}
                 onFocus={clearChangePasswordError}
@@ -192,20 +192,13 @@ function ChangePassword() {
             <Row>
               <InputName>New Password</InputName>
               <EditProfileInput
-                {...register("newPassword", {
-                  required: "New password item is required.",
-                  minLength: {
-                    value: 3,
-                    message: "Must be longer than 3 characters.",
-                  },
-                  validate: (currentValue) => currentValue.length >= 3,
-                })}
+                {...register("newPassword")}
                 type="password"
                 hasError={Boolean(errors?.newPassword?.message)}
               />
               <FormError message={errors.newPassword?.message} />
             </Row>
-            {/* <Row>
+            <Row>
               <InputName>
                 Confirm
                 <br />
@@ -214,13 +207,13 @@ function ChangePassword() {
               <EditProfileInput
                 {...register("confirmNewPassword", {
                   required: "Password does not match. Please try again.",
-                  validate: (currentValue) =>
-                    newPassword === confirmNewPassword,
+                  validate: (currentValue) => currentValue === newPassword,
                 })}
                 type="password"
                 hasError={Boolean(errors.confirmNewPassword?.message)}
               />
-            </Row> */}
+              <FormError message={errors.confirmNewPassword?.message} />
+            </Row>
             <Row>
               <InputName />
               <Submit
