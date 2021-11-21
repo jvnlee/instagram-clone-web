@@ -8,9 +8,10 @@
 // ====================================================
 
 export interface editProfile_editProfile {
-  __typename: "MutationResponse";
+  __typename: "EditProfileResponse";
   status: boolean;
   error: string | null;
+  avatarUrl: string | null;
 }
 
 export interface editProfile {

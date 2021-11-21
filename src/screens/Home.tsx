@@ -30,13 +30,11 @@ function Home() {
   return (
     <>
       <PageTitle title="Home" />
-      {loading ? (
-        <h1>Loading...</h1>
-      ) : (
-        data?.seeFeed?.map(
-          (photo) => photo && <Post key={photo.id} photo={photo} />
-        )
-      )}
+      {loading
+        ? null
+        : data?.seeFeed?.map(
+            (photo) => photo && <Post key={photo.id} photo={photo} />
+          )}
     </>
   );
 }

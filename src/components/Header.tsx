@@ -15,6 +15,11 @@ import { searchUser, searchUserVariables } from "../__generated__/searchUser";
 import { useState } from "react";
 import { useHistory } from "react-router";
 
+interface FormProps {
+  keyword: string;
+  searchUserError?: string;
+}
+
 const SEARCH_USER_QUERY = gql`
   query searchUser($keyword: String!, $lastId: Int) {
     searchUser(keyword: $keyword, lastId: $lastId) {
@@ -126,8 +131,11 @@ function Header() {
     setError,
     clearErrors,
     setValue,
-  } = useForm({
+  } = useForm<FormProps>({
     mode: "onChange",
+    defaultValues: {
+      keyword: "",
+    },
   });
   const { keyword } = watch();
   const { data } = useQuery<searchUser, searchUserVariables>(
@@ -136,9 +144,9 @@ function Header() {
       variables: { keyword },
       onCompleted: (data) => {
         const { searchResult, error } = data?.searchUser!;
-        if (searchResult?.length === 0 || error) {
+        if (searchResult?.length === 0 && error) {
           return setError("searchUserError", {
-            message: error!,
+            message: error,
           });
         } else {
           clearErrors("searchUserError");

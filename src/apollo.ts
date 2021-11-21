@@ -1,11 +1,7 @@
-import {
-  ApolloClient,
-  createHttpLink,
-  InMemoryCache,
-  makeVar,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, makeVar } from "@apollo/client";
 import routes from "./routes";
 import { setContext } from "@apollo/client/link/context";
+import { createUploadLink } from "apollo-upload-client";
 
 const TOKEN = "token";
 const DARK_MODE = "darkMode";
@@ -34,7 +30,7 @@ export const disableDarkMode = () => {
   isDarkModeVar(false);
 };
 
-const httpLink = createHttpLink({
+const httpLink = createUploadLink({
   uri: "http://localhost:4000/graphql",
 });
 

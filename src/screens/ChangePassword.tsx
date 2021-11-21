@@ -7,28 +7,21 @@ import SubmitButton from "../components/auth/SubmitButton";
 import PageTitle from "../components/PageTitle";
 import { BaseBox, FatText } from "../components/shared";
 import routes from "../routes";
-import { useHistory, useLocation } from "react-router";
+import { useHistory } from "react-router";
 import gql from "graphql-tag";
 import {
   changePassword,
   changePasswordVariables,
 } from "../__generated__/changePassword";
 import { logUserOut } from "../apollo";
+import { Link } from "react-router-dom";
+import useUser from "../hooks/useUser";
 
 interface FormProps {
   password: string;
   newPassword: string;
   confirmNewPassword: string;
   changePasswordError: string;
-}
-
-interface LocationStateProps {
-  avatar?: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  username?: string;
-  bio?: string;
 }
 
 const CHANGE_PASSWORD_MUTATION = gql`
@@ -93,21 +86,25 @@ const InputName = styled(FatText)`
   text-align: right;
 `;
 
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-left: 32px;
+`;
+
 const EditProfileInput = styled(Input)`
   width: 355px;
   margin-top: 0px;
-  margin-left: 32px;
 `;
 
 const Submit = styled(SubmitButton)`
   width: 355px;
-  margin-left: 32px;
   cursor: pointer;
 `;
 
 function ChangePassword() {
   const history = useHistory();
-  const location = useLocation<LocationStateProps>();
+  const { data: userData } = useUser();
 
   const {
     register,
@@ -125,7 +122,7 @@ function ChangePassword() {
     {
       onCompleted: (data) => {
         const { status, error } = data.changePassword;
-        const username = location.state.username;
+        const { username } = userData?.me!;
         if (!status && error) {
           return setError("changePasswordError", {
             message: error,
@@ -141,17 +138,6 @@ function ChangePassword() {
     }
   );
 
-  const moveToEditProfile = () => {
-    history.push(routes.editProfile, {
-      avatar: location.state.avatar,
-      email: location.state.email,
-      firstName: location.state.firstName,
-      lastName: location.state.lastName,
-      username: location.state.username,
-      bio: location.state.bio,
-    });
-  };
-
   const onValidSubmit: SubmitHandler<changePasswordVariables> = (data) => {
     if (loading) return;
     changePassword({
@@ -163,15 +149,17 @@ function ChangePassword() {
     clearErrors("changePasswordError");
   };
 
-  const { newPassword } = getValues();
+  const { password, newPassword } = getValues();
 
   return (
     <>
       <PageTitle title="Change Password" />
       <Container>
         <SideMenu>
-          <Tab onClick={moveToEditProfile}>
-            <TabName>Edit Profile</TabName>
+          <Tab>
+            <Link to={routes.editProfile}>
+              <TabName>Edit Profile</TabName>
+            </Link>
           </Tab>
           <Tab>
             <TabName>Change Password</TabName>
@@ -181,22 +169,38 @@ function ChangePassword() {
           <Form onSubmit={handleSubmit(onValidSubmit)}>
             <Row>
               <InputName>Old Password</InputName>
-              <EditProfileInput
-                {...register("password")}
-                type="password"
-                hasError={Boolean(errors?.password?.message)}
-                onFocus={clearChangePasswordError}
-              />
-              <FormError message={errors.password?.message} />
+              <Wrapper>
+                <EditProfileInput
+                  {...register("password", {
+                    required: "Old password is required.",
+                  })}
+                  type="password"
+                  hasError={Boolean(errors.password?.message)}
+                  onFocus={clearChangePasswordError}
+                />
+                <FormError message={errors.password?.message} />
+              </Wrapper>
             </Row>
             <Row>
               <InputName>New Password</InputName>
-              <EditProfileInput
-                {...register("newPassword")}
-                type="password"
-                hasError={Boolean(errors?.newPassword?.message)}
-              />
-              <FormError message={errors.newPassword?.message} />
+              <Wrapper>
+                <EditProfileInput
+                  {...register("newPassword", {
+                    required: "New password is required.",
+                    minLength: {
+                      value: 3,
+                      message: "Password should be longer than 3 characters.",
+                    },
+                    validate: (currentValue) =>
+                      currentValue !== password ||
+                      "Please type a password that isn't your current one.",
+                  })}
+                  type="password"
+                  hasError={Boolean(errors?.newPassword?.message)}
+                  onFocus={clearChangePasswordError}
+                />
+                <FormError message={errors.newPassword?.message} />
+              </Wrapper>
             </Row>
             <Row>
               <InputName>
@@ -204,24 +208,31 @@ function ChangePassword() {
                 <br />
                 New Password
               </InputName>
-              <EditProfileInput
-                {...register("confirmNewPassword", {
-                  required: "Password does not match. Please try again.",
-                  validate: (currentValue) => currentValue === newPassword,
-                })}
-                type="password"
-                hasError={Boolean(errors.confirmNewPassword?.message)}
-              />
-              <FormError message={errors.confirmNewPassword?.message} />
+              <Wrapper>
+                <EditProfileInput
+                  {...register("confirmNewPassword", {
+                    required: "Confirm new password is required.",
+                    validate: (currentValue) =>
+                      currentValue === newPassword ||
+                      "Password does not match. Please try again.",
+                  })}
+                  type="password"
+                  hasError={Boolean(errors.confirmNewPassword?.message)}
+                  onFocus={clearChangePasswordError}
+                />
+                <FormError message={errors.confirmNewPassword?.message} />
+              </Wrapper>
             </Row>
             <Row>
               <InputName />
-              <Submit
-                type="submit"
-                value="Submit"
-                disabled={!isValid || loading}
-              />
-              <FormError message={errors?.changePasswordError?.message} />
+              <Wrapper>
+                <Submit
+                  type="submit"
+                  value="Submit"
+                  disabled={!isValid || loading}
+                />
+                <FormError message={errors?.changePasswordError?.message} />
+              </Wrapper>
             </Row>
           </Form>
         </ContentBox>
