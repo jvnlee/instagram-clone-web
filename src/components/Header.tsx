@@ -1,6 +1,5 @@
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { faInstagram } from "@fortawesome/free-brands-svg-icons";
-import { faCompass, faHome, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -14,6 +13,12 @@ import gql from "graphql-tag";
 import { searchUser, searchUserVariables } from "../__generated__/searchUser";
 import { useState } from "react";
 import { useHistory } from "react-router";
+import {
+  faCompass,
+  faPlusSquare,
+  faUser,
+} from "@fortawesome/free-regular-svg-icons";
+import { faHome } from "@fortawesome/free-solid-svg-icons";
 
 interface FormProps {
   keyword: string;
@@ -156,11 +161,9 @@ function Header() {
   );
   const history = useHistory();
   const onValidSubmit = () => {
-    if (
-      data?.searchUser.searchResult &&
-      data?.searchUser.searchResult.length > 0
-    ) {
-      history.push(`/${data?.searchUser?.searchResult[0]?.username}`);
+    const result = data?.searchUser.searchResult;
+    if (result && result.length > 0) {
+      history.push(`/${result[0]?.username}`);
     }
     setModalOn(false);
     setValue("keyword", "");
@@ -195,6 +198,11 @@ function Header() {
                 <Icon>
                   <Link to={routes.home}>
                     <FontAwesomeIcon icon={faHome} />
+                  </Link>
+                </Icon>
+                <Icon>
+                  <Link to={routes.create}>
+                    <FontAwesomeIcon icon={faPlusSquare} />
                   </Link>
                 </Icon>
                 <Icon>

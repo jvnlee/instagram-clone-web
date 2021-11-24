@@ -15,7 +15,7 @@ import Input from "../components/auth/Input";
 import routes from "../routes";
 import Avatar from "../components/Avatar";
 import useUser from "../hooks/useUser";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 interface FormProps {
@@ -211,7 +211,7 @@ function EditProfile() {
 
   const [avatarFile, setAvatarFile] = useState();
 
-  const handleChange = async (event: any) => {
+  const handleChange = (event: any) => {
     const file = event.target.files[0];
     setAvatarBg(URL.createObjectURL(file));
     setAvatarFile(file);

@@ -11,6 +11,7 @@ import { client, isDarkModeVar, isLoggedInVar } from "./apollo";
 import Layout from "./components/Layout";
 import routes from "./routes";
 import ChangePassword from "./screens/ChangePassword";
+import Create from "./screens/Create";
 import EditProfile from "./screens/EditProfile";
 import HashtagFeed from "./screens/HashtagFeed";
 import Home from "./screens/Home";
@@ -55,6 +56,9 @@ function App() {
                   <SignUp />
                 </Route>
               )}
+              <Route exact path={routes.create}>
+                <Create />
+              </Route>
               <Route exact path={routes.editProfile}>
                 <Layout>
                   <EditProfile />
