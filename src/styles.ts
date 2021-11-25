@@ -23,6 +23,13 @@ export const GlobalStyles = createGlobalStyle`
     {
       all: unset;
     }
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+      -webkit-text-fill-color: inherit;
+      transition: background-color 5000s ease-in-out 0s;
+    }
     * {
       box-sizing: border-box;
     }

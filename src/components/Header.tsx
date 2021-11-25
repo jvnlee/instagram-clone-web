@@ -12,7 +12,7 @@ import { BaseBox, Button, FatText } from "./shared";
 import gql from "graphql-tag";
 import { searchUser, searchUserVariables } from "../__generated__/searchUser";
 import { useState } from "react";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import {
   faCompass,
   faPlusSquare,
@@ -126,8 +126,10 @@ const Error = styled.span`
 
 function Header() {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
+  const location = useLocation();
+  console.log(location);
   const { data: userData } = useUser();
-  const [modalOn, setModalOn] = useState<boolean>(false);
+  const [searchModal, setSearchModal] = useState<boolean>(false);
   const {
     register,
     watch,
@@ -165,7 +167,7 @@ function Header() {
     if (result && result.length > 0) {
       history.push(`/${result[0]?.username}`);
     }
-    setModalOn(false);
+    setSearchModal(false);
     setValue("keyword", "");
   };
 
@@ -187,8 +189,8 @@ function Header() {
                 type="text"
                 placeholder="Search"
                 autoComplete="off"
-                onFocus={() => setModalOn(true)}
-                onBlur={() => setModalOn(false)}
+                onFocus={() => setSearchModal(true)}
+                onBlur={() => setSearchModal(false)}
               />
             </form>
           </Column>
@@ -201,7 +203,12 @@ function Header() {
                   </Link>
                 </Icon>
                 <Icon>
-                  <Link to={routes.create}>
+                  <Link
+                    to={{
+                      pathname: routes.create,
+                      state: { background: location },
+                    }}
+                  >
                     <FontAwesomeIcon icon={faPlusSquare} />
                   </Link>
                 </Icon>
@@ -230,7 +237,7 @@ function Header() {
           </Column>
         </Wrapper>
       </SHeader>
-      {modalOn ? (
+      {searchModal ? (
         <ModalContainer>
           <Modal>
             {data?.searchUser.searchResult?.map((user) => (

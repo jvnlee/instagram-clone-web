@@ -49,6 +49,7 @@ const Username = styled(FatText)`
 
 const Photo = styled.img`
   width: 100%;
+  background-color: #000000;
 `;
 
 const PhotoBottom = styled.div`

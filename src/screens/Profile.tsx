@@ -108,6 +108,7 @@ const PhotoGrid = styled.div`
 
 const Photo = styled.div<PhotoProps>`
   background-image: url(${(props) => props.url});
+  background-color: #000000;
   background-size: cover;
   position: relative;
 `;
