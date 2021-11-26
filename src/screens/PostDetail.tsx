@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery, useReactiveVar } from "@apollo/client";
 import gql from "graphql-tag";
 import { useParams } from "react-router";
 import styled from "styled-components";
@@ -10,6 +10,11 @@ import { seePhoto, seePhotoVariables } from "../__generated__/seePhoto";
 import Comment from "../components/feed/Comment";
 import { Link } from "react-router-dom";
 import TimeBefore from "../components/TimeBefore";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
+import PhotoModal from "../components/PhotoModal";
+import { useState } from "react";
+import { PhotoMenuVar } from "../apollo";
 
 interface ParamsType {
   id: string;
@@ -43,6 +48,7 @@ const Container = styled(BaseBox)`
 const PhotoContainer = styled.div`
   width: 600px;
   height: auto;
+  background-color: #000000;
 `;
 
 const Photo = styled.img`
@@ -58,9 +64,15 @@ const PhotoRight = styled.div`
 const Top = styled.div`
   width: 100%;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   padding: 16px;
   border-bottom: 1px solid ${(props) => props.theme.borderColor};
+`;
+
+const UserInfo = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const Username = styled(FatText)`
@@ -84,6 +96,9 @@ const Middle = styled.div`
 function PostDetail() {
   const { id } = useParams<ParamsType>();
   const photoId = parseInt(id);
+
+  const photoMenu = useReactiveVar(PhotoMenuVar);
+
   const { data } = useQuery<seePhoto, seePhotoVariables>(SEE_PHOTO_QUERY, {
     variables: {
       id: photoId,
@@ -99,18 +114,25 @@ function PostDetail() {
         </PhotoContainer>
         <PhotoRight>
           <Top>
-            <Link to={`/${data?.seePhoto?.user.username}`}>
-              <Avatar size="32" url={data?.seePhoto?.user.avatar} />
-            </Link>
-            <Link to={`/${data?.seePhoto?.user.username}`}>
-              <Username>{data?.seePhoto?.user.username}</Username>
-            </Link>
-            <Separator> • </Separator>
-            {data?.seePhoto?.user.isFollowing ? (
-              <Following>Following</Following>
-            ) : (
-              <Follow>Follow</Follow>
-            )}
+            <UserInfo>
+              <Link to={`/${data?.seePhoto?.user.username}`}>
+                <Avatar size="32" url={data?.seePhoto?.user.avatar} />
+              </Link>
+              <Link to={`/${data?.seePhoto?.user.username}`}>
+                <Username>{data?.seePhoto?.user.username}</Username>
+              </Link>
+              <Separator> • </Separator>
+              {data?.seePhoto?.user.isFollowing ? (
+                <Following>Following</Following>
+              ) : (
+                <Follow>Follow</Follow>
+              )}
+            </UserInfo>
+            <FontAwesomeIcon
+              icon={faEllipsisH}
+              onClick={() => PhotoMenuVar(true)}
+              style={{ cursor: "pointer" }}
+            />
           </Top>
           <Middle>
             <Comment
@@ -136,6 +158,7 @@ function PostDetail() {
           </Middle>
         </PhotoRight>
       </Container>
+      {photoMenu ? <PhotoModal photoId={photoId} /> : null}
     </>
   );
 }

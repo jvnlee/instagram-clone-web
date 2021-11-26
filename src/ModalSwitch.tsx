@@ -14,8 +14,24 @@ import PostDetail from "./screens/PostDetail";
 import Profile from "./screens/Profile";
 import SignUp from "./screens/SignUp";
 
+interface Background {
+  hash: string;
+  key: string;
+  pathname: string;
+  search: string;
+  state: undefined;
+}
+
+interface LocationProps {
+  hash: string;
+  key: string;
+  pathname: string;
+  search: string;
+  background: Background;
+}
+
 function ModalSwitch() {
-  let location = useLocation<any>();
+  let location = useLocation<LocationProps>();
   let background = location?.state?.background;
   const isLoggedIn = useReactiveVar(isLoggedInVar);
 

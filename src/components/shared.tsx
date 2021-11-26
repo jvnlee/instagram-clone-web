@@ -22,3 +22,16 @@ export const Button = styled.span`
   color: white;
   font-weight: 600;
 `;
+
+export const Backdrop = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+`;

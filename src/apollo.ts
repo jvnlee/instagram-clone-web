@@ -8,6 +8,8 @@ const DARK_MODE = "darkMode";
 
 export const isLoggedInVar = makeVar(Boolean(localStorage.getItem(TOKEN)));
 export const isDarkModeVar = makeVar(Boolean(localStorage.getItem(DARK_MODE)));
+export const PhotoMenuVar = makeVar(false);
+export const DeleteMenuVar = makeVar(false);
 
 export const logUserIn = (token: string) => {
   localStorage.setItem(TOKEN, token);

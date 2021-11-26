@@ -28,7 +28,7 @@ export interface uploadPhoto_uploadPhoto {
 }
 
 export interface uploadPhoto {
-  uploadPhoto: uploadPhoto_uploadPhoto;
+  uploadPhoto: uploadPhoto_uploadPhoto | null;
 }
 
 export interface uploadPhotoVariables {

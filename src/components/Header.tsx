@@ -127,7 +127,6 @@ const Error = styled.span`
 function Header() {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const location = useLocation();
-  console.log(location);
   const { data: userData } = useUser();
   const [searchModal, setSearchModal] = useState<boolean>(false);
   const {

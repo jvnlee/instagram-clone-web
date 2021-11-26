@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import Avatar from "../components/Avatar";
-import { FatText } from "../components/shared";
+import { Backdrop, FatText } from "../components/shared";
 import useUser from "../hooks/useUser";
 import gql from "graphql-tag";
 import { uploadPhoto } from "../__generated__/uploadPhoto";
@@ -29,19 +29,6 @@ const UPLOAD_PHOTO_MUTATION = gql`
     }
   }
   ${FEED_PHOTO_FRAGMENT}
-`;
-
-const Backdrop = styled.div`
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  overflow: hidden;
 `;
 
 const ExitButton = styled.div`
@@ -203,7 +190,6 @@ function Create() {
     UPLOAD_PHOTO_MUTATION,
     {
       update: (cache, result) => {
-        console.log(cache);
         const { uploadPhoto } = result.data!;
         if (uploadPhoto?.id) {
           cache.modify({
