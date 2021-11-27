@@ -1,14 +1,19 @@
 import { useMutation, useReactiveVar } from "@apollo/client";
 import styled from "styled-components";
 import { DeleteMenuVar, PhotoMenuVar } from "../apollo";
-import { Backdrop, FatText } from "./shared";
+import { Backdrop, FatText, ModalButton, ModalContainer } from "./shared";
 import gql from "graphql-tag";
 import { deletePhoto } from "../__generated__/deletePhoto";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import routes from "../routes";
+import { Link } from "react-router-dom";
 
 interface Props {
   photoId: number;
+  file: string;
+  caption: string;
+  username: string;
+  avatar: string;
 }
 
 const DELETE_PHOTO_MUTATION = gql`
@@ -17,30 +22,6 @@ const DELETE_PHOTO_MUTATION = gql`
       status
       error
     }
-  }
-`;
-
-const ModalContainer = styled.div`
-  width: 100%;
-  max-width: 400px;
-  height: auto;
-  background-color: ${(props) => props.theme.boxColor};
-  border-radius: 15px;
-  overflow: hidden;
-  transition: width 1s linear;
-`;
-
-const ModalButton = styled.div`
-  width: 100%;
-  height: 48px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-bottom: 1px solid ${(props) => props.theme.borderColor};
-  font-weight: 600;
-  cursor: pointer;
-  :nth-child(2) {
-    color: #ff0000;
   }
 `;
 
@@ -63,8 +44,9 @@ const SubMessage = styled(FatText)`
   opacity: 0.4;
 `;
 
-function PhotoModal({ photoId }: Props) {
+function PhotoModal({ photoId, avatar, username, file, caption }: Props) {
   const history = useHistory();
+  const location = useLocation();
   const deleteMenu = useReactiveVar(DeleteMenuVar);
   const handleCancelClick = (event: any) => {
     event.stopPropagation();
@@ -99,9 +81,11 @@ function PhotoModal({ photoId }: Props) {
         id: photoId,
       },
     });
+    PhotoMenuVar(false);
+    DeleteMenuVar(false);
   };
 
-  const Render = () => {
+  const modalRender = () => {
     if (deleteMenu) {
       return (
         <>
@@ -116,7 +100,15 @@ function PhotoModal({ photoId }: Props) {
     }
     return (
       <>
-        <ModalButton>Edit</ModalButton>
+        <Link
+          to={{
+            pathname: `/edit/${photoId}`,
+            state: { background: location, avatar, username, file, caption },
+          }}
+          onClick={handleCancelClick}
+        >
+          <ModalButton>Edit</ModalButton>
+        </Link>
         <ModalButton onClick={handleDeleteClick}>Delete</ModalButton>
         <ModalButton onClick={handleCancelClick}>Cancel</ModalButton>
       </>
@@ -125,7 +117,7 @@ function PhotoModal({ photoId }: Props) {
 
   return (
     <Backdrop>
-      <ModalContainer>{Render()}</ModalContainer>
+      <ModalContainer>{modalRender()}</ModalContainer>
     </Backdrop>
   );
 }

@@ -35,3 +35,27 @@ export const Backdrop = styled.div`
   left: 0;
   overflow: hidden;
 `;
+
+export const ModalContainer = styled.div`
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  background-color: ${(props) => props.theme.boxColor};
+  border-radius: 15px;
+  overflow: hidden;
+  transition: width 1s linear;
+`;
+
+export const ModalButton = styled.div`
+  width: 100%;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid ${(props) => props.theme.borderColor};
+  font-weight: 600;
+  cursor: pointer;
+  :nth-child(2) {
+    color: #ff0000;
+  }
+`;

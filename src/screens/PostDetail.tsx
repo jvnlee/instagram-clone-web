@@ -9,11 +9,9 @@ import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from "../fragments";
 import { seePhoto, seePhotoVariables } from "../__generated__/seePhoto";
 import Comment from "../components/feed/Comment";
 import { Link } from "react-router-dom";
-import TimeBefore from "../components/TimeBefore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 import PhotoModal from "../components/PhotoModal";
-import { useState } from "react";
 import { PhotoMenuVar } from "../apollo";
 
 interface ParamsType {
@@ -58,7 +56,11 @@ const Photo = styled.img`
 
 const PhotoRight = styled.div`
   width: 330px;
-  height: auto;
+  height: 600px;
+  overflow-y: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const Top = styled.div`
@@ -140,8 +142,8 @@ function PostDetail() {
               avatar={data?.seePhoto?.user.avatar!}
               author={data?.seePhoto?.user.username!}
               payload={data?.seePhoto?.caption!}
+              createdAt={data?.seePhoto?.createdAt!}
             />
-            {TimeBefore(data?.seePhoto?.createdAt!)}
             {data?.seePhoto?.comments?.map((comment) => (
               <Comment
                 key={comment?.id}
@@ -152,13 +154,22 @@ function PostDetail() {
                 author={comment?.user.username!}
                 payload={comment?.payload!}
                 isMine={comment?.isMine}
+                createdAt={comment?.createdAt!}
                 margin="12px 0 0"
               />
             ))}
           </Middle>
         </PhotoRight>
       </Container>
-      {photoMenu ? <PhotoModal photoId={photoId} /> : null}
+      {photoMenu ? (
+        <PhotoModal
+          photoId={photoId}
+          file={data?.seePhoto?.file!}
+          caption={data?.seePhoto?.caption!}
+          username={data?.seePhoto?.user.username!}
+          avatar={data?.seePhoto?.user.avatar!}
+        />
+      ) : null}
     </>
   );
 }

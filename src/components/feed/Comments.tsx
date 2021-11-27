@@ -31,7 +31,7 @@ const Container = styled.div`
 
 const CommentCount = styled.span`
   display: block;
-  margin-top: 14px;
+  margin-top: 10px;
   opacity: 0.5;
   font-weight: 600;
 `;
@@ -119,8 +119,7 @@ function Comments({ photo }: CommentsProps) {
           photoId={photo.id}
           author={comment?.user.username!}
           payload={comment?.payload!}
-          isMine={comment?.isMine}
-          margin="12px 0 0"
+          margin="8px 0 0"
         />
       ))}
       <InputContainer>

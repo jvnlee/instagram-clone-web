@@ -4,7 +4,8 @@ import { isLoggedInVar } from "./apollo";
 import Layout from "./components/Layout";
 import routes from "./routes";
 import ChangePassword from "./screens/ChangePassword";
-import Create from "./screens/Create";
+import CreatePost from "./screens/CreatePost";
+import EditPost from "./screens/EditPost";
 import EditProfile from "./screens/EditProfile";
 import HashtagFeed from "./screens/HashtagFeed";
 import Home from "./screens/Home";
@@ -83,9 +84,14 @@ function ModalSwitch() {
         <Redirect from="*" to={routes.home} />
       </Switch>
       {background && (
-        <Route exact path={routes.create}>
-          <Create />
-        </Route>
+        <Switch>
+          <Route exact path={routes.create}>
+            <CreatePost />
+          </Route>
+          <Route exact path={`/edit/:id`}>
+            <EditPost />
+          </Route>
+        </Switch>
       )}
     </>
   );

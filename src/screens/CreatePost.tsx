@@ -82,7 +82,7 @@ const NextButton = styled(FatText)`
   cursor: pointer;
 `;
 
-const ShareButton = styled.input`
+const SubmitButton = styled.input`
   color: ${(props) => props.theme.accent};
   cursor: pointer;
   font-weight: 600;
@@ -141,10 +141,15 @@ const Username = styled(FatText)`
   margin-left: 10px;
 `;
 
-const CaptionInput = styled.input`
+const CaptionInput = styled.textarea`
   width: 100%;
-  margin-top: 20px;
+  height: 92%;
+  margin-top: 15px;
+  font-size: 16px;
   font-weight: 400;
+  line-height: 1.3em;
+  word-break: break-all;
+  vertical-align: top;
   ::placeholder {
     font-size: 16px;
     opacity: 0.8;
@@ -174,7 +179,7 @@ const PhotoInput = styled.input`
   display: none;
 `;
 
-function Create() {
+function CreatePost() {
   const history = useHistory();
   const { data: userData } = useUser();
   const [photo, setPhoto] = useState("");
@@ -298,7 +303,7 @@ function Create() {
             <ModalTitle>Create New Post</ModalTitle>
             {photo ? (
               animate ? (
-                <ShareButton type="submit" value="Share" />
+                <SubmitButton type="submit" value="Share" />
               ) : (
                 <NextButton onClick={handleNextClick}>Next</NextButton>
               )
@@ -318,9 +323,9 @@ function Create() {
                     </UserContainer>
                     <CaptionInput
                       {...register("caption")}
-                      type="text"
                       placeholder="Write a caption..."
                       autoComplete="off"
+                      spellCheck="false"
                     />
                   </CaptionContainer>
                 </>
@@ -372,4 +377,4 @@ function Create() {
   );
 }
 
-export default Create;
+export default CreatePost;

@@ -1,10 +1,11 @@
 import styled from "styled-components";
 
 const Time = styled.span`
+  display: block;
   color: ${(props) => props.theme.fontColor};
   opacity: 0.5;
   font-size: 12px;
-  margin-left: 43px;
+  margin-right: 8px;
 `;
 
 function TimeBefore(createdAt: string) {

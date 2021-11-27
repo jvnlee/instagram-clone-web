@@ -1,14 +1,12 @@
-import { useMutation } from "@apollo/client";
-import gql from "graphql-tag";
-import React from "react";
+import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import {
-  deleteComment,
-  deleteCommentVariables,
-} from "../../__generated__/deleteComment";
 import Avatar from "../Avatar";
+import CommentModal from "../CommentModal";
 import { FatText } from "../shared";
+import TimeBefore from "../TimeBefore";
 
 interface CommentProps {
   id?: number;
@@ -18,16 +16,9 @@ interface CommentProps {
   author?: string;
   payload?: string;
   isMine?: boolean;
+  createdAt?: string;
   margin?: string;
 }
-
-const DELETE_COMMENT_MUTATION = gql`
-  mutation deleteComment($id: Int!) {
-    deleteComment(id: $id) {
-      status
-    }
-  }
-`;
 
 const CommentContainer = styled.div<CommentProps>`
   margin: ${(props) => props.margin};
@@ -38,7 +29,7 @@ const CommentContainer = styled.div<CommentProps>`
 
 const Wrapper = styled.div`
   display: flex;
-  align-items: center;
+  align-items: stretch;
 `;
 
 const AvatarContainer = styled.div`
@@ -46,23 +37,32 @@ const AvatarContainer = styled.div`
 `;
 
 const Caption = styled.span`
-  margin-left: 5px;
   word-break: break-all;
   a {
     background-color: inherit;
     color: ${(props) => props.theme.accent};
     cursor: pointer;
   }
+  line-height: 1.3em;
 `;
 
-const DeleteBtn = styled.button`
-  color: #7f7f7f;
-  font-size: 12px;
-  border: 0.5px solid #7f7f7f;
-  padding: 2px 8px;
-  border-radius: 10px;
-  vertical-align: middle;
-  cursor: pointer;
+const Username = styled(FatText)`
+  color: ${(props) => props.theme.fontColor};
+  margin-right: 5px;
+`;
+
+const CommentBottom = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+`;
+
+const Icon = styled.div`
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  :hover {
+    opacity: 0.5;
+  }
 `;
 
 function Comment({
@@ -74,62 +74,62 @@ function Comment({
   payload,
   isMine,
   margin,
+  createdAt,
 }: CommentProps) {
-  const [deleteComment] = useMutation<deleteComment, deleteCommentVariables>(
-    DELETE_COMMENT_MUTATION,
-    {
-      variables: { id: id! },
-      update: (cache, result) => {
-        const { status } = result.data?.deleteComment!;
-        if (status) {
-          cache.evict({ id: `Comment:${id}` });
-          cache.modify({
-            id: `Photo:${photoId}`,
-            fields: {
-              commentNum: (prev) => prev - 1,
-            },
-          });
-        }
-      },
-    }
-  );
-  const onDeleteClick = () => {
-    deleteComment();
-  };
+  const [commentModal, setCommentModal] = useState(false);
+
   return (
-    <CommentContainer margin={margin}>
-      <Wrapper>
-        {avatarOn ? (
-          <AvatarContainer>
-            <Avatar size="32" url={avatar} />
-          </AvatarContainer>
-        ) : null}
-        <Link to={`/${author}`}>
-          <FatText>{author}</FatText>
-        </Link>
-        <Caption>
-          {payload &&
-            payload.split(" ").map((word: string, index: number) =>
-              /#[\w]+|@[\w]+/.test(word) ? (
-                word.includes("#") ? (
-                  <React.Fragment key={index}>
-                    <Link to={`/hashtags/${word.substring(1)}`}>{word}</Link>
-                    &nbsp;
-                  </React.Fragment>
+    <>
+      <CommentContainer margin={margin}>
+        <Wrapper>
+          {avatarOn ? (
+            <AvatarContainer>
+              <Avatar size="32" url={avatar} />
+            </AvatarContainer>
+          ) : null}
+          <Caption>
+            <Link to={`/${author}`}>
+              <Username>{author}</Username>
+            </Link>
+            {payload &&
+              payload.split(" ").map((word: string, index: number) =>
+                /#[\w]+|@[\w]+/.test(word) ? (
+                  word.includes("#") ? (
+                    <React.Fragment key={index}>
+                      <Link to={`/hashtags/${word.substring(1)}`}>{word}</Link>
+                      &nbsp;
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment key={index}>
+                      <Link to={`/${word.substring(1)}`}>{word}</Link>
+                      &nbsp;
+                    </React.Fragment>
+                  )
                 ) : (
-                  <React.Fragment key={index}>
-                    <Link to={`/${word.substring(1)}`}>{word}</Link>
-                    &nbsp;
-                  </React.Fragment>
+                  <React.Fragment key={index}>{word}&nbsp;</React.Fragment>
                 )
-              ) : (
-                <React.Fragment key={index}>{word}&nbsp;</React.Fragment>
-              )
-            )}
-        </Caption>
-      </Wrapper>
-      {isMine ? <DeleteBtn onClick={onDeleteClick}>Delete</DeleteBtn> : null}
-    </CommentContainer>
+              )}
+            {createdAt ? (
+              <CommentBottom>
+                {TimeBefore(createdAt!)}
+                {isMine ? (
+                  <Icon onClick={() => setCommentModal(true)}>
+                    <FontAwesomeIcon icon={faEllipsisH} />
+                  </Icon>
+                ) : null}
+              </CommentBottom>
+            ) : null}
+          </Caption>
+        </Wrapper>
+      </CommentContainer>
+      {commentModal ? (
+        <CommentModal
+          id={id!}
+          photoId={photoId!}
+          setCommentModal={setCommentModal}
+        />
+      ) : null}
+    </>
   );
 }
 

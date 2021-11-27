@@ -15,7 +15,7 @@ import Input from "../components/auth/Input";
 import routes from "../routes";
 import Avatar from "../components/Avatar";
 import useUser from "../hooks/useUser";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 interface FormProps {
@@ -145,13 +145,13 @@ function EditProfile() {
   const history = useHistory();
   const { data: userData } = useUser();
 
-  let values = {
+  const values = useRef({
     email: "",
     firstName: "",
     lastName: "",
     username: "",
     bio: "",
-  };
+  });
 
   const [avatarBg, setAvatarBg] = useState("");
 
@@ -166,21 +166,21 @@ function EditProfile() {
   } = useForm<FormProps>({
     mode: "onChange",
     defaultValues: {
-      ...values,
+      ...values.current,
     },
   });
 
   useEffect(() => {
-    values = {
+    values.current = {
       email: userData?.me?.email!,
       firstName: userData?.me?.firstName!,
       lastName: userData?.me?.lastName!,
       username: userData?.me?.username!,
       bio: userData?.me?.bio!,
     };
-    reset(values);
+    reset(values.current);
     setAvatarBg(userData?.me?.avatar!);
-  }, [userData?.me]);
+  }, [userData?.me, reset]);
 
   const [editProfile, { loading }] = useMutation<editProfile>(
     EDIT_PROFILE_MUTATION,

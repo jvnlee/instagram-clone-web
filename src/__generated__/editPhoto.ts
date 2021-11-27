@@ -4,19 +4,20 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: deleteComment
+// GraphQL mutation operation: editPhoto
 // ====================================================
 
-export interface deleteComment_deleteComment {
+export interface editPhoto_editPhoto {
   __typename: "MutationResponse";
   status: boolean;
   error: string | null;
 }
 
-export interface deleteComment {
-  deleteComment: deleteComment_deleteComment;
+export interface editPhoto {
+  editPhoto: editPhoto_editPhoto;
 }
 
-export interface deleteCommentVariables {
+export interface editPhotoVariables {
   id: number;
+  caption: string;
 }
