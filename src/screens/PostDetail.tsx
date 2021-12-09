@@ -13,6 +13,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 import PhotoModal from "../components/PhotoModal";
 import { PhotoMenuVar } from "../apollo";
+import CommentCreator from "../components/CommentCreator";
+import PhotoActions from "../components/PhotoActions";
 
 interface ParamsType {
   id: string;
@@ -57,10 +59,7 @@ const Photo = styled.img`
 const PhotoRight = styled.div`
   width: 330px;
   height: 600px;
-  overflow-y: scroll;
-  ::-webkit-scrollbar {
-    display: none;
-  }
+  position: relative;
 `;
 
 const Top = styled.div`
@@ -92,7 +91,20 @@ const Separator = styled.span`
 `;
 
 const Middle = styled.div`
+  height: 392px;
   padding: 16px;
+  overflow-y: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const Bottom = styled.div`
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  padding: 8px 16px 0;
+  border-top: 1px solid ${(props) => props.theme.borderColor};
 `;
 
 function PostDetail() {
@@ -159,6 +171,10 @@ function PostDetail() {
               />
             ))}
           </Middle>
+          <Bottom>
+            <PhotoActions photo={data?.seePhoto!} />
+            <CommentCreator photo={data?.seePhoto!} />
+          </Bottom>
         </PhotoRight>
       </Container>
       {photoMenu ? (
