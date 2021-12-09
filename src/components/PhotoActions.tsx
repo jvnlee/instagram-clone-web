@@ -56,14 +56,14 @@ function PhotoActions({ photo }: PhotoActionsProps) {
   const [toggleLikeMutation] = useMutation<toggleLike, toggleLikeVariables>(
     TOGGLE_LIKE_MUTATION,
     {
-      variables: { id: photo.id },
+      variables: { id: photo?.id },
       update: (cache, result) => {
         if (result.data?.toggleLike.status) {
           cache.modify({
-            id: `Photo:${photo.id}`,
+            id: `Photo:${photo?.id}`,
             fields: {
               isLiked: (prev) => !prev,
-              likes: (prev) => (photo.isLiked ? prev - 1 : prev + 1),
+              likes: (prev) => (photo?.isLiked ? prev - 1 : prev + 1),
             },
           });
         }
@@ -76,12 +76,12 @@ function PhotoActions({ photo }: PhotoActionsProps) {
         <div>
           <Action onClick={() => toggleLikeMutation()}>
             <FontAwesomeIcon
-              style={{ color: photo.isLiked ? "#ed4956" : "inherit" }}
-              icon={photo.isLiked ? solidFaHeart : faHeart}
+              style={{ color: photo?.isLiked ? "#ed4956" : "inherit" }}
+              icon={photo?.isLiked ? solidFaHeart : faHeart}
             />
           </Action>
           <Action>
-            <Link to={`/posts/${photo.id}`}>
+            <Link to={`/posts/${photo?.id}`}>
               <FontAwesomeIcon icon={faComment} />
             </Link>
           </Action>
@@ -93,7 +93,7 @@ function PhotoActions({ photo }: PhotoActionsProps) {
           <FontAwesomeIcon icon={faBookmark} />
         </div>
       </ActionsContainer>
-      <Likes>{photo.likes === 1 ? "1 Like" : `${photo.likes} Likes`}</Likes>
+      <Likes>{photo?.likes === 1 ? "1 Like" : `${photo?.likes} Likes`}</Likes>
     </>
   );
 }
