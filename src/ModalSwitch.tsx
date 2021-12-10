@@ -5,6 +5,7 @@ import Layout from "./components/Layout";
 import routes from "./routes";
 import ChangePassword from "./screens/ChangePassword";
 import CreatePost from "./screens/CreatePost";
+import DirectMessages from "./screens/DirectMessages";
 import EditPost from "./screens/EditPost";
 import EditProfile from "./screens/EditProfile";
 import HashtagFeed from "./screens/HashtagFeed";
@@ -56,6 +57,11 @@ function ModalSwitch() {
         <Route path={`/posts/:id`}>
           <Layout>
             <PostDetail />
+          </Layout>
+        </Route>
+        <Route path={`/direct/inbox`}>
+          <Layout>
+            <DirectMessages />
           </Layout>
         </Route>
         {isLoggedIn ? null : (

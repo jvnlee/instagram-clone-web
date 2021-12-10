@@ -100,6 +100,7 @@ function Login() {
             placeholder="Username"
             hasError={Boolean(errors?.username?.message)}
             onFocus={clearLoginError}
+            spellCheck="false"
           />
           <FormError message={errors?.username?.message} />
           <Input

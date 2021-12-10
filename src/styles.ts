@@ -27,7 +27,7 @@ export const GlobalStyles = createGlobalStyle`
     input:-webkit-autofill:hover, 
     input:-webkit-autofill:focus,
     input:-webkit-autofill:active {
-      -webkit-text-fill-color: inherit;
+      -webkit-text-fill-color: ${(props) => props.theme.fontColor};
       transition: background-color 5000s ease-in-out 0s;
     }
     * {

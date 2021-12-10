@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import {
   faCompass,
+  faPaperPlane,
   faPlusSquare,
   faUser,
 } from "@fortawesome/free-regular-svg-icons";
@@ -94,7 +95,6 @@ const Modal = styled.div`
   background-color: ${(props) => props.theme.bgColor};
   border: 1px solid ${(props) => props.theme.borderColor};
   padding: 15px;
-  position: absolute;
   width: 300px;
   height: 300px;
   border-radius: 6px;
@@ -199,6 +199,11 @@ function Header() {
                 <Icon>
                   <Link to={routes.home}>
                     <FontAwesomeIcon icon={faHome} />
+                  </Link>
+                </Icon>
+                <Icon>
+                  <Link to={`/direct/inbox`}>
+                    <FontAwesomeIcon icon={faPaperPlane} />
                   </Link>
                 </Icon>
                 <Icon>
