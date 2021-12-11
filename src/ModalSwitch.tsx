@@ -64,6 +64,11 @@ function ModalSwitch() {
             <DirectMessages />
           </Layout>
         </Route>
+        <Route path={`/direct/:id`}>
+          <Layout>
+            <DirectMessages />
+          </Layout>
+        </Route>
         {isLoggedIn ? null : (
           <Route exact path={routes.signUp}>
             <SignUp />
