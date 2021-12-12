@@ -5,16 +5,10 @@ import styled from "styled-components";
 import Avatar from "../components/Avatar";
 import PageTitle from "../components/PageTitle";
 import { BaseBox, FatText } from "../components/shared";
-import { seeRoom, seeRoomVariables } from "../__generated__/seeRoom";
 import { seeRooms } from "../__generated__/seeRooms";
-import { useParams } from "react-router";
 import useUser from "../hooks/useUser";
-import MyMessage from "../components/MyMessage";
-import OpponentMessage from "../components/OpponentMessage";
-
-interface ParamsType {
-  id: string;
-}
+import ChatRoom from "./ChatRoom";
+import { useLocation } from "react-router";
 
 const SEE_ROOMS_QUERY = gql`
   query seeRooms {
@@ -35,33 +29,33 @@ const SEE_ROOMS_QUERY = gql`
   }
 `;
 
-const SEE_ROOM_QUERY = gql`
-  query seeRoom($id: Int!) {
-    seeRoom(id: $id) {
-      id
-      messages {
-        id
-        user {
-          username
-          avatar
-        }
-        payload
-        createdAt
-      }
-    }
+const Container = styled(BaseBox)`
+  height: 60vh;
+  display: flex;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  :first-child {
+    border-right: 1px solid ${(props) => props.theme.borderColor};
   }
 `;
 
-const Container = styled(BaseBox)`
-  height: 90vh;
+const UserInfo = styled.div`
+  width: 100%;
+  height: 60px;
+  border-bottom: 1px solid ${(props) => props.theme.borderColor};
   display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const RoomList = styled.div`
   width: 350px;
-  height: 100%;
+  height: calc(60vh - 60px);
   padding-top: 12px;
-  border-right: 1px solid ${(props) => props.theme.borderColor};
+  overflow-y: scroll;
 `;
 
 const RoomContainer = styled.div`
@@ -73,8 +67,8 @@ const RoomContainer = styled.div`
 `;
 
 const AvatarContainer = styled.div`
-  width: 56px;
-  height: 56px;
+  width: auto;
+  height: auto;
   margin-right: 10px;
 `;
 
@@ -83,67 +77,57 @@ const RoomInfo = styled.div`
   flex-direction: column;
 `;
 
-const Username = styled(FatText)``;
+const Username = styled(FatText)`
+  font-size: 16px;
+`;
 
-const Message = styled.span``;
-
-const ChatBox = styled.div`
-  width: 580px;
-  height: 100%;
+const Message = styled.span`
+  display: block;
+  margin-top: 5px;
+  opacity: 0.5;
 `;
 
 function DirectMessages() {
-  const { id } = useParams<ParamsType>();
-  const { data: userData } = useUser();
-  const roomId = parseInt(id);
-  const { data, loading } = useQuery<seeRooms>(SEE_ROOMS_QUERY, {
-    onCompleted: () => console.log("fetch completed"),
-  });
+  const { pathname } = useLocation();
 
-  const { data: roomData, loading: roomLoading } = useQuery<
-    seeRoom,
-    seeRoomVariables
-  >(SEE_ROOM_QUERY, { variables: { id: roomId } });
+  const { data: userData } = useUser();
+  const { data, loading } = useQuery<seeRooms>(SEE_ROOMS_QUERY);
 
   return (
     <>
       <PageTitle title="Inbox" />
       <Container>
-        <RoomList>
-          {loading
-            ? null
-            : data?.seeRooms?.map((room) => {
-                return (
-                  room && (
-                    <Link to={`/direct/${room.id}`}>
-                      <RoomContainer key={room.id}>
-                        <AvatarContainer>
-                          <Avatar url={room.users?.[0]?.avatar!} size="56" />
-                        </AvatarContainer>
-                        <RoomInfo>
-                          <Username>{room.users?.[0]?.username}</Username>
-                          <Message>
-                            {room.unreadNum === 0
-                              ? room.messages?.[room.messages?.length! - 1]
-                                  ?.payload
-                              : `${room.unreadNum} new message(s)`}
-                          </Message>
-                        </RoomInfo>
-                      </RoomContainer>
-                    </Link>
-                  )
-                );
-              })}
-        </RoomList>
-        <ChatBox>
-          {roomData?.seeRoom?.messages?.map((message) =>
-            message?.user.username === userData?.me?.username ? (
-              <MyMessage payload={message?.payload!} />
-            ) : (
-              <OpponentMessage payload={message?.payload!} />
-            )
-          )}
-        </ChatBox>
+        <Wrapper>
+          <UserInfo>
+            <Username>{userData?.me?.username}</Username>
+          </UserInfo>
+          <RoomList>
+            {loading
+              ? null
+              : data?.seeRooms?.map((room) => {
+                  return (
+                    room && (
+                      <Link key={room.id} to={`/direct/${room.id}`}>
+                        <RoomContainer>
+                          <AvatarContainer>
+                            <Avatar url={room.users?.[0]?.avatar!} size="56" />
+                          </AvatarContainer>
+                          <RoomInfo>
+                            <span>{room.users?.[0]?.username}</span>
+                            <Message>
+                              {room.unreadNum === 0
+                                ? room.messages?.[0]?.payload
+                                : `${room.unreadNum} new message(s)`}
+                            </Message>
+                          </RoomInfo>
+                        </RoomContainer>
+                      </Link>
+                    )
+                  );
+                })}
+          </RoomList>
+        </Wrapper>
+        <Wrapper>{pathname === "/direct/inbox" ? null : <ChatRoom />}</Wrapper>
       </Container>
     </>
   );

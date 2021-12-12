@@ -6,6 +6,7 @@ declare module "styled-components" {
     boxColor: string;
     fontColor: string;
     borderColor: string;
+    chatColor: string;
     accent: string;
   }
 }

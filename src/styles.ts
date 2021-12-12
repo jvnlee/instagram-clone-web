@@ -6,6 +6,7 @@ export const lightMode: DefaultTheme = {
   boxColor: "#ffffff",
   fontColor: "#262626",
   borderColor: "#dbdbdb",
+  chatColor: "#efefef",
   accent: "#0095f6",
 };
 
@@ -14,6 +15,7 @@ export const darkMode: DefaultTheme = {
   boxColor: "#181818",
   fontColor: "white",
   borderColor: "#101010",
+  chatColor: "#222222",
   accent: "#0095f6",
 };
 

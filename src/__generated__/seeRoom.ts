@@ -7,6 +7,15 @@
 // GraphQL query operation: seeRoom
 // ====================================================
 
+export interface seeRoom_seeRoom_users {
+  __typename: "User";
+  id: number;
+  firstName: string;
+  lastName: string | null;
+  username: string;
+  avatar: string | null;
+}
+
 export interface seeRoom_seeRoom_messages_user {
   __typename: "User";
   username: string;
@@ -24,6 +33,7 @@ export interface seeRoom_seeRoom_messages {
 export interface seeRoom_seeRoom {
   __typename: "Room";
   id: number;
+  users: (seeRoom_seeRoom_users | null)[] | null;
   messages: (seeRoom_seeRoom_messages | null)[] | null;
 }
 

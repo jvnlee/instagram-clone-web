@@ -87,7 +87,7 @@ const LoginBtn = styled(Button)``;
 const ModalContainer = styled.div`
   position: fixed;
   top: 55px;
-  left: calc(50vw - 215px);
+  left: calc(50vw - 265px);
   z-index: 9999;
 `;
 
