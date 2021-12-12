@@ -87,6 +87,11 @@ const Message = styled.span`
   opacity: 0.5;
 `;
 
+const NewMessage = styled(FatText)`
+  display: block;
+  margin-top: 5px;
+`;
+
 function DirectMessages() {
   const { pathname } = useLocation();
 
@@ -114,11 +119,11 @@ function DirectMessages() {
                           </AvatarContainer>
                           <RoomInfo>
                             <span>{room.users?.[0]?.username}</span>
-                            <Message>
-                              {room.unreadNum === 0
-                                ? room.messages?.[0]?.payload
-                                : `${room.unreadNum} new message(s)`}
-                            </Message>
+                            {room.unreadNum === 0 ? (
+                              <Message>{room.messages?.[0]?.payload}</Message>
+                            ) : (
+                              <NewMessage>{`${room.unreadNum} new message(s)`}</NewMessage>
+                            )}
                           </RoomInfo>
                         </RoomContainer>
                       </Link>

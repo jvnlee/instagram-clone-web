@@ -58,7 +58,7 @@ function MessageCreator({ roomId }: MessageCreatorProps) {
     register,
     handleSubmit,
     getValues,
-    setValue,
+    reset,
     formState: { isValid },
   } = useForm({
     mode: "onChange",
@@ -70,7 +70,7 @@ function MessageCreator({ roomId }: MessageCreatorProps) {
   const onValidSubmit = () => {
     const { payload } = getValues();
     sendMessage({ variables: { payload, roomId } });
-    setValue("payload", "");
+    reset({ payload: "" });
   };
 
   return (

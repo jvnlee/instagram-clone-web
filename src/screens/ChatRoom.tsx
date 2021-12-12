@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import gql from "graphql-tag";
+import { useEffect } from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -50,6 +51,20 @@ const READ_MESSAGE_MUTATION = gql`
   }
 `;
 
+const ROOM_UPDATES_SUBSCRIPTION = gql`
+  subscription roomUpdates($id: Int!) {
+    roomUpdates(id: $id) {
+      id
+      payload
+      user {
+        username
+        avatar
+      }
+      createdAt
+    }
+  }
+`;
+
 const OpponentInfo = styled.div`
   width: 100%;
   height: 60px;
@@ -90,7 +105,7 @@ function ChatRoom() {
 
   const { data: userData } = useUser();
   const [readMessage] = useMutation(READ_MESSAGE_MUTATION, {
-    variables: { id: 27 },
+    variables: { id: 26 },
     update: (cache) => {
       cache.modify({
         id: `Room:${roomId}`,
@@ -101,13 +116,33 @@ function ChatRoom() {
     },
   });
 
-  const { data: roomData, loading: roomLoading } = useQuery<
-    seeRoom,
-    seeRoomVariables
-  >(SEE_ROOM_QUERY, {
+  const {
+    data: roomData,
+    loading: roomLoading,
+    subscribeToMore,
+  } = useQuery<seeRoom, seeRoomVariables>(SEE_ROOM_QUERY, {
     variables: { id: roomId },
     onCompleted: () => readMessage(),
   });
+
+  useEffect(() => {
+    subscribeToMore({
+      document: ROOM_UPDATES_SUBSCRIPTION,
+      variables: { id: roomId },
+      updateQuery: (prev: any, { subscriptionData }: any) => {
+        console.log("prev:", prev);
+        if (!subscriptionData.data) return prev;
+        const newMessage = subscriptionData.data.roomUpdates;
+        const result = Object.assign({}, prev, {
+          seeRoom: {
+            messages: [newMessage, ...prev.seeRoom.messages],
+          },
+        });
+        console.log(result);
+        return result;
+      },
+    });
+  }, [subscribeToMore, roomId]);
 
   return (
     <>
