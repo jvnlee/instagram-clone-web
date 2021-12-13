@@ -40,6 +40,7 @@ const Wrapper = styled.div`
   :first-child {
     border-right: 1px solid ${(props) => props.theme.borderColor};
   }
+  overflow-x: hidden;
 `;
 
 const UserInfo = styled.div`
@@ -75,6 +76,7 @@ const AvatarContainer = styled.div`
 const RoomInfo = styled.div`
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 `;
 
 const Username = styled(FatText)`
@@ -85,9 +87,12 @@ const Message = styled.span`
   display: block;
   margin-top: 5px;
   opacity: 0.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
-const NewMessage = styled(FatText)`
+const NewMessageCount = styled(FatText)`
   display: block;
   margin-top: 5px;
 `;
@@ -122,7 +127,7 @@ function DirectMessages() {
                             {room.unreadNum === 0 ? (
                               <Message>{room.messages?.[0]?.payload}</Message>
                             ) : (
-                              <NewMessage>{`${room.unreadNum} new message(s)`}</NewMessage>
+                              <NewMessageCount>{`${room.unreadNum} new message(s)`}</NewMessageCount>
                             )}
                           </RoomInfo>
                         </RoomContainer>

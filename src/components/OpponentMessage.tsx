@@ -20,6 +20,7 @@ const MessageBox = styled.div`
   display: flex;
   align-items: center;
   padding: 16px;
+  word-break: break-all;
 `;
 
 function OpponentMessage({ payload }: OpponentMessageProps) {

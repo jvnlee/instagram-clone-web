@@ -130,15 +130,14 @@ function ChatRoom() {
       document: ROOM_UPDATES_SUBSCRIPTION,
       variables: { id: roomId },
       updateQuery: (prev: any, { subscriptionData }: any) => {
-        console.log("prev:", prev);
         if (!subscriptionData.data) return prev;
         const newMessage = subscriptionData.data.roomUpdates;
-        const result = Object.assign({}, prev, {
+        const result = {
           seeRoom: {
+            ...prev.seeRoom,
             messages: [newMessage, ...prev.seeRoom.messages],
           },
-        });
-        console.log(result);
+        };
         return result;
       },
     });
