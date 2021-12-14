@@ -34,6 +34,7 @@ export const Backdrop = styled.div`
   top: 0;
   left: 0;
   overflow: hidden;
+  z-index: 9000;
 `;
 
 export const ModalContainer = styled.div`

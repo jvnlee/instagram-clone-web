@@ -7,9 +7,9 @@ import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Avatar from "../components/Avatar";
-import MessageCreator from "../components/MessageCreator";
-import MyMessage from "../components/MyMessage";
-import OpponentMessage from "../components/OpponentMessage";
+import MessageCreator from "../components/chat/MessageCreator";
+import MyMessage from "../components/chat/MyMessage";
+import OpponentMessage from "../components/chat/OpponentMessage";
 import { FatText } from "../components/shared";
 import useUser from "../hooks/useUser";
 import { seeRoom, seeRoomVariables } from "../__generated__/seeRoom";
@@ -105,12 +105,18 @@ function ChatRoom() {
 
   const { data: userData } = useUser();
   const [readMessage] = useMutation(READ_MESSAGE_MUTATION, {
-    variables: { id: 26 },
+    variables: { id: 102 },
     update: (cache) => {
       cache.modify({
         id: `Room:${roomId}`,
         fields: {
           unreadNum: () => 0,
+        },
+      });
+      cache.modify({
+        id: `Message:${102}`,
+        fields: {
+          isRead: () => true,
         },
       });
     },
@@ -143,23 +149,23 @@ function ChatRoom() {
     });
   }, [subscribeToMore, roomId]);
 
+  const opponent = roomData?.seeRoom?.users?.find(
+    (user) => user?.username !== userData?.me?.username
+  );
+
   return (
     <>
       <OpponentInfo>
         <Info>
           <AvatarContainer>
-            <Avatar url={roomData?.seeRoom?.users?.[0]?.avatar!} size="24" />
+            <Avatar url={opponent?.avatar!} size="24" />
           </AvatarContainer>
           <Username>
-            {`${roomData?.seeRoom?.users?.[0]?.firstName!} 
-                  ${
-                    roomData?.seeRoom?.users?.[0]?.lastName
-                      ? roomData?.seeRoom?.users?.[0]?.lastName
-                      : ""
-                  }`}
+            {`${opponent?.firstName!} 
+                  ${opponent?.lastName ? opponent?.lastName : ""}`}
           </Username>
         </Info>
-        <Link to={`/${roomData?.seeRoom?.users?.[0]?.username}`}>
+        <Link to={`/${opponent?.username}`}>
           <FontAwesomeIcon icon={faInfoCircle} size="lg" />
         </Link>
       </OpponentInfo>

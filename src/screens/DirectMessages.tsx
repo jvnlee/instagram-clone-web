@@ -103,6 +103,8 @@ function DirectMessages() {
   const { data: userData } = useUser();
   const { data, loading } = useQuery<seeRooms>(SEE_ROOMS_QUERY);
 
+  let opponent;
+
   return (
     <>
       <PageTitle title="Inbox" />
@@ -115,15 +117,18 @@ function DirectMessages() {
             {loading
               ? null
               : data?.seeRooms?.map((room) => {
+                  opponent = room?.users?.find(
+                    (user) => user?.username !== userData?.me?.username
+                  );
                   return (
                     room && (
                       <Link key={room.id} to={`/direct/${room.id}`}>
                         <RoomContainer>
                           <AvatarContainer>
-                            <Avatar url={room.users?.[0]?.avatar!} size="56" />
+                            <Avatar url={opponent?.avatar!} size="56" />
                           </AvatarContainer>
                           <RoomInfo>
-                            <span>{room.users?.[0]?.username}</span>
+                            <span>{opponent?.username}</span>
                             {room.unreadNum === 0 ? (
                               <Message>{room.messages?.[0]?.payload}</Message>
                             ) : (

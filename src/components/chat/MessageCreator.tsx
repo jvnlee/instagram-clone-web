@@ -5,7 +5,7 @@ import gql from "graphql-tag";
 import {
   sendMessage,
   sendMessageVariables,
-} from "../__generated__/sendMessage";
+} from "../../__generated__/sendMessage";
 
 interface MessageCreatorProps {
   roomId: number;
