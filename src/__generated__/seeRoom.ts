@@ -43,4 +43,5 @@ export interface seeRoom {
 
 export interface seeRoomVariables {
   id: number;
+  lastId?: number | null;
 }

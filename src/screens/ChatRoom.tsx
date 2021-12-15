@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import gql from "graphql-tag";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -19,7 +19,7 @@ interface ParamsType {
 }
 
 const SEE_ROOM_QUERY = gql`
-  query seeRoom($id: Int!) {
+  query seeRoom($id: Int!, $lastId: Int) {
     seeRoom(id: $id) {
       id
       users {
@@ -29,7 +29,7 @@ const SEE_ROOM_QUERY = gql`
         username
         avatar
       }
-      messages {
+      messages(lastId: $lastId) {
         id
         user {
           username
@@ -126,10 +126,14 @@ function ChatRoom() {
     data: roomData,
     loading: roomLoading,
     subscribeToMore,
+    fetchMore,
   } = useQuery<seeRoom, seeRoomVariables>(SEE_ROOM_QUERY, {
     variables: { id: roomId },
     onCompleted: () => readMessage(),
   });
+
+  const lastId: number =
+    roomData?.seeRoom?.messages?.[roomData.seeRoom.messages.length - 1]?.id!;
 
   useEffect(() => {
     subscribeToMore({
@@ -148,6 +152,36 @@ function ChatRoom() {
       },
     });
   }, [subscribeToMore, roomId]);
+
+  const roomWithScroll = useRef<HTMLDivElement>(null);
+
+  const onLoadMore = () => {
+    fetchMore({
+      variables: { lastId },
+      // updateQuery: (prev, {fetchMoreResult}) => {
+      //   if (!fetchMoreResult) return prev;
+      //   const newData = fetchMoreResult.seeRoom?.messages;
+      //   return {
+      //     ...prev.seeRoom,
+      //     messages: [newData, ...prev.seeRoom?.messages!],
+      //   };
+      // },
+    });
+  };
+
+  const onRoomScroll = () => {
+    const scrollTop = roomWithScroll?.current?.scrollTop;
+    const scrollHeight = roomWithScroll?.current?.scrollHeight;
+    const clientHeight = roomWithScroll?.current?.clientHeight;
+    const scrolledToTop =
+      Math.ceil(clientHeight! - scrollTop!) >= scrollHeight! - 10;
+    if (scrolledToTop) onLoadMore();
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", onRoomScroll);
+    return () => window.removeEventListener("scroll", onRoomScroll);
+  }, []);
 
   const opponent = roomData?.seeRoom?.users?.find(
     (user) => user?.username !== userData?.me?.username
@@ -169,7 +203,7 @@ function ChatRoom() {
           <FontAwesomeIcon icon={faInfoCircle} size="lg" />
         </Link>
       </OpponentInfo>
-      <Room>
+      <Room ref={roomWithScroll} onScroll={() => onRoomScroll()}>
         {roomLoading
           ? null
           : roomData?.seeRoom?.messages?.map((message) =>

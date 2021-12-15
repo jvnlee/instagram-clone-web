@@ -103,8 +103,6 @@ function DirectMessages() {
   const { data: userData } = useUser();
   const { data, loading } = useQuery<seeRooms>(SEE_ROOMS_QUERY);
 
-  let opponent;
-
   return (
     <>
       <PageTitle title="Inbox" />
@@ -117,7 +115,7 @@ function DirectMessages() {
             {loading
               ? null
               : data?.seeRooms?.map((room) => {
-                  opponent = room?.users?.find(
+                  const opponent = room?.users?.find(
                     (user) => user?.username !== userData?.me?.username
                   );
                   return (
