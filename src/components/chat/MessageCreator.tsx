@@ -6,9 +6,11 @@ import {
   sendMessage,
   sendMessageVariables,
 } from "../../__generated__/sendMessage";
+import { RefObject } from "react";
 
 interface MessageCreatorProps {
   roomId: number;
+  roomWithScroll: RefObject<HTMLDivElement>;
 }
 
 const SEND_MESSAGE_MUTATION = gql`
@@ -53,7 +55,7 @@ const SendButton = styled.input`
   cursor: pointer;
 `;
 
-function MessageCreator({ roomId }: MessageCreatorProps) {
+function MessageCreator({ roomId, roomWithScroll }: MessageCreatorProps) {
   const {
     register,
     handleSubmit,
@@ -63,8 +65,14 @@ function MessageCreator({ roomId }: MessageCreatorProps) {
   } = useForm({
     mode: "onChange",
   });
+
   const [sendMessage] = useMutation<sendMessage, sendMessageVariables>(
-    SEND_MESSAGE_MUTATION
+    SEND_MESSAGE_MUTATION,
+    {
+      onCompleted: () =>
+        (roomWithScroll!.current!.scrollTop! =
+          roomWithScroll?.current?.scrollHeight!),
+    }
   );
 
   const onValidSubmit = () => {

@@ -6,7 +6,7 @@ interface MyMessageProps {
 
 const Container = styled.div`
   width: 100%;
-  margin-bottom: 10px;
+  margin-top: 10px;
   display: flex;
   justify-content: right;
 `;

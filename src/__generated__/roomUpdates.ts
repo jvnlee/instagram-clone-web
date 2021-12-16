@@ -9,6 +9,7 @@
 
 export interface roomUpdates_roomUpdates_user {
   __typename: "User";
+  id: number;
   username: string;
   avatar: string | null;
 }

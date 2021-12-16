@@ -57,6 +57,7 @@ const ROOM_UPDATES_SUBSCRIPTION = gql`
       id
       payload
       user {
+        id
         username
         avatar
       }
@@ -93,7 +94,7 @@ const Username = styled(FatText)`
 const Room = styled.div`
   width: 577px;
   height: calc(60vh - 144px);
-  padding: 20px;
+  padding: 20px 20px 0;
   display: flex;
   flex-direction: column-reverse;
   overflow-y: scroll;
@@ -104,19 +105,14 @@ function ChatRoom() {
   const roomId = parseInt(id);
 
   const { data: userData } = useUser();
+
   const [readMessage] = useMutation(READ_MESSAGE_MUTATION, {
-    variables: { id: 102 },
+    variables: { id: roomId },
     update: (cache) => {
       cache.modify({
         id: `Room:${roomId}`,
         fields: {
           unreadNum: () => 0,
-        },
-      });
-      cache.modify({
-        id: `Message:${102}`,
-        fields: {
-          isRead: () => true,
         },
       });
     },
@@ -131,9 +127,6 @@ function ChatRoom() {
     variables: { id: roomId },
     onCompleted: () => readMessage(),
   });
-
-  const lastId: number =
-    roomData?.seeRoom?.messages?.[roomData.seeRoom.messages.length - 1]?.id!;
 
   useEffect(() => {
     subscribeToMore({
@@ -155,17 +148,24 @@ function ChatRoom() {
 
   const roomWithScroll = useRef<HTMLDivElement>(null);
 
-  const onLoadMore = () => {
+  const lastId: number | null =
+    roomData?.seeRoom?.messages?.[roomData.seeRoom.messages.length - 1]?.id!;
+
+  const onScrolledToTop = () => {
     fetchMore({
       variables: { lastId },
-      // updateQuery: (prev, {fetchMoreResult}) => {
-      //   if (!fetchMoreResult) return prev;
-      //   const newData = fetchMoreResult.seeRoom?.messages;
-      //   return {
-      //     ...prev.seeRoom,
-      //     messages: [newData, ...prev.seeRoom?.messages!],
-      //   };
-      // },
+      // updateQuery will be removed in the next major version of Apollo Client.
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        const prevResult = prev.seeRoom?.messages!;
+        const newResult = fetchMoreResult.seeRoom?.messages!;
+        return {
+          seeRoom: {
+            ...prev.seeRoom!,
+            messages: [...prevResult, ...newResult],
+          },
+        };
+      },
     });
   };
 
@@ -175,13 +175,13 @@ function ChatRoom() {
     const clientHeight = roomWithScroll?.current?.clientHeight;
     const scrolledToTop =
       Math.ceil(clientHeight! - scrollTop!) >= scrollHeight! - 10;
-    if (scrolledToTop) onLoadMore();
+    if (scrolledToTop) onScrolledToTop();
   };
 
   useEffect(() => {
     window.addEventListener("scroll", onRoomScroll);
     return () => window.removeEventListener("scroll", onRoomScroll);
-  }, []);
+  });
 
   const opponent = roomData?.seeRoom?.users?.find(
     (user) => user?.username !== userData?.me?.username
@@ -217,7 +217,7 @@ function ChatRoom() {
               )
             )}
       </Room>
-      <MessageCreator roomId={roomId} />
+      <MessageCreator roomId={roomId} roomWithScroll={roomWithScroll} />
     </>
   );
 }
