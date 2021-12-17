@@ -18,6 +18,7 @@ export interface seeRoom_seeRoom_users {
 
 export interface seeRoom_seeRoom_messages_user {
   __typename: "User";
+  id: number;
   username: string;
   avatar: string | null;
 }

@@ -32,6 +32,7 @@ const SEE_ROOM_QUERY = gql`
       messages(lastId: $lastId) {
         id
         user {
+          id
           username
           avatar
         }

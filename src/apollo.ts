@@ -77,6 +77,19 @@ export const client = new ApolloClient({
       User: {
         keyFields: (obj) => `User:${obj.username}`,
       },
+      Query: {
+        fields: {
+          seeFeed: {
+            merge(existing = [], incoming) {
+              return [...existing, ...incoming];
+            },
+            read(existing, { cache }) {
+              console.log(cache);
+              return existing;
+            },
+          },
+        },
+      },
     },
   }),
 });
